@@ -15,6 +15,8 @@ const authMiddleware = (app) => {
         return res.status(500).send("No shop provided");
       }
 
+	  console.log("This is /api/auth/auth");
+
       if (req.query.embedded === "1") {
         const shop = shopify.utils.sanitizeShop(req.query.shop);
         const queryParams = new URLSearchParams({
@@ -60,6 +62,8 @@ const authMiddleware = (app) => {
         rawResponse: res,
       });
 
+	  console.log("This is /api/auth/tokens");
+
       const { session } = callbackResponse;
 
       await sessionHandler.storeSession(session);
@@ -103,6 +107,8 @@ const authMiddleware = (app) => {
         rawRequest: req,
         rawResponse: res,
       });
+
+	  console.log("This is /api/auth/callback");
 
       const { session } = callbackResponse;
       await sessionHandler.storeSession(session);
