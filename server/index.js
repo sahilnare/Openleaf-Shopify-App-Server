@@ -136,13 +136,14 @@ const createServer = async (root = process.cwd()) => {
     const fs = await import("fs");
 
     app.use(compression());
-    // app.use(serveStatic(resolve("dist/client")));
-    // app.use("/*", (req, res, next) => {
-    //   res
-    //     .status(200)
-    //     .set("Content-Type", "text/html")
-    //     .send(fs.readFileSync(`${root}/dist/client/index.html`));
-    // });
+	// # Commented out the static embedded app
+    app.use(serveStatic(resolve("dist/client")));
+    app.use("/*", (req, res, next) => {
+      res
+        .status(200)
+        .set("Content-Type", "text/html")
+        .send(fs.readFileSync(`${root}/dist/client/index.html`));
+    });
   }
 
   return { app };
