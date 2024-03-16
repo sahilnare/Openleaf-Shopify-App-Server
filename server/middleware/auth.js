@@ -36,6 +36,7 @@ const authMiddleware = (app) => {
     } catch (e) {
       console.error(`---> Error at /api/auth`, e);
       const { shop } = req.query;
+	  console.error(shop);
       switch (true) {
         case e instanceof CookieNotFound:
         case e instanceof InvalidOAuthError:
@@ -66,6 +67,8 @@ const authMiddleware = (app) => {
       const webhookRegisterResponse = await shopify.webhooks.register({
         session,
       });
+	  console.log('Registered for webhooks');
+	  console.log(webhookRegisterResponse);
       console.dir(webhookRegisterResponse, { depth: null });
 
       return await shopify.auth.begin({
