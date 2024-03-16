@@ -1,0 +1,61 @@
+{
+  "name": "shopify-express-boilerplate",
+  "version": "0.0.8",
+  "description": "Shopify Boilerplate Code written in React, Node, Express, MongoDB and GraphQL",
+  "type": "module",
+  "author": {
+    "name": "Harshdeep Singh Hura",
+    "url": "https://harshdeephura.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kinngh/shopify-node-express-mongodb-app.git"
+  },
+  "scripts": {
+    "dev": "concurrently \"npm run dev:*\"",
+    "dev:server": "NODE_ENV=dev nodemon server/index.js --ignore client/ --ignore dist/",
+    "dev:client": "vite --config=./client/vite.config.cjs",
+    "build": "vite build --config=./client/vite.config.cjs",
+    "start": "NODE_ENV=prod node server/index.js",
+    "-----> utils <-----": "",
+    "update": "ncu -u",
+    "update:url": "node _developer/updateDashboard.js",
+    "pretty": "prettier --write .",
+    "-----> tunneling <-----": "",
+    "-----> ngrok <-----": "",
+    "ngrok:auth": "ngrok authtoken 2JlxrtRSMvNdYvgMh1iFctOgODk_3zspsJdbiXVLmZ9YmxWWh",
+    "ngrok": "ngrok http 5173",
+    "ngrok:prod": "ngrok http 8081",
+    "-----> cloudflare <-----": "",
+    "cloudflare": "cloudflared tunnel --url localhost:5173",
+    "cloudflare:prod": "cloudflared tunnel --url localhost:8081",
+    "-----> Shopify <-----": "",
+    "g:install": "npm i -g @shopify/app@latest @shopify/cli@latest",
+    "shopify": "shopify",
+    "-----> Reserved Scripts <-----": "",
+    "preserve": "npm run build"
+  },
+  "dependencies": {
+    "@shopify/polaris": "^12.21.0",
+    "@shopify/shopify-api": "^9.5.1",
+    "compression": "^1.7.4",
+    "cryptr": "^6.3.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.3",
+    "mongoose": "^8.2.2",
+    "raviger": "^4.1.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "serve-static": "^1.15.0"
+  },
+  "devDependencies": {
+    "@shopify/cli-kit": "^3.57.1",
+    "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^8.2.2",
+    "ngrok": "^5.0.0-beta.2",
+    "nodemon": "^3.1.0",
+    "npm-check-updates": "^16.14.17",
+    "prettier": "^3.2.5",
+    "vite": "^5.1.6"
+  }
+}
