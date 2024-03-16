@@ -109,6 +109,7 @@ const updateDashboardURLs = async (apiKey, appUrl) => {
       .map((error) => error.message)
       .join(", ");
 
+	  console.log(errors);
     throw new AbortError(errors);
   }
 };
