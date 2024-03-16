@@ -15,7 +15,11 @@ const authMiddleware = (app) => {
         return res.status(500).send("No shop provided");
       }
 
-	  console.log("This is /api/auth/auth");
+	  console.log("This is /api/auth");
+
+	  console.log(req.query.shop);
+	  console.log(req.query);
+	  console.log(req.body);
 
       if (req.query.embedded === "1") {
         const shop = shopify.utils.sanitizeShop(req.query.shop);
