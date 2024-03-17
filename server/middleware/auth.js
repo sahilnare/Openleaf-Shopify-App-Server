@@ -23,6 +23,8 @@ const authMiddleware = (app) => {
 
       if (req.query.embedded === "1") {
         const shop = shopify.utils.sanitizeShop(req.query.shop);
+		console.log("Sanitized shop");
+		console.log(shop);
         const queryParams = new URLSearchParams({
           ...req.query,
           shop,
