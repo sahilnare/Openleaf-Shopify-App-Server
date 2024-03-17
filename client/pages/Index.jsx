@@ -13,7 +13,7 @@ import { navigate } from "raviger";
 const HomePage = () => {
   return (
     <>
-      <Page title="Home">
+      {/* <Page title="Home">
         <Layout>
           <Layout.Section variant="fullWidth">
             <Card>
@@ -135,6 +135,38 @@ const HomePage = () => {
             </Card>
           </Layout.Section>
           <Layout.Section variant="oneHalf" />
+        </Layout>
+      </Page> */}
+	  <Page title="Openleaf">
+        <Layout>
+          <Layout.Section variant="fullWidth">
+            <Card>
+              <BlockStack gap="200">
+                <Text as="h2" variant="headingMd">
+                  Login to Openleaf
+                </Text>
+                <Text>
+                  Login using this link and enter your Openleaf credentials
+                </Text>
+				<InlineStack wrap={false} align="end">
+                  <Button
+                    variant="primary"
+                    external
+                    icon={ExternalIcon}
+                    onClick={() => {
+                      open(
+                        "https://dashboard.openleaf.tech/admin/dashboard",
+                        "_blank"
+                      );
+                    }}
+                  >
+                    Login
+                  </Button>
+                </InlineStack>
+              </BlockStack>
+            </Card>
+          </Layout.Section>
+          
         </Layout>
       </Page>
     </>
