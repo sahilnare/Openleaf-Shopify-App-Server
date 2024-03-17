@@ -14,10 +14,10 @@ export default function App() {
   return (
     <PolarisProvider i18n={translations}>
       <AppBridgeProvider>
-        <ui-nav-menu>
+        {/* <ui-nav-menu>
           <a href="/debug/data">Fetch Data</a>
           <a href="/debug/billing">Billing API</a>
-        </ui-nav-menu>
+        </ui-nav-menu> */}
         {RouteComponents}
       </AppBridgeProvider>
     </PolarisProvider>

@@ -79,6 +79,8 @@ const authMiddleware = (app) => {
 
       await sessionHandler.storeSession(session);
 
+	  console.log(session);
+
       const webhookRegisterResponse = await shopify.webhooks.register({
         session,
       });
