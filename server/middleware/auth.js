@@ -34,12 +34,8 @@ const authMiddleware = (app) => {
         return res.redirect(`/exitframe?${queryParams}`);
       }
 
-	  const shop = shopify.utils.sanitizeShop(req.query.shop);
-		console.log("Sanitized shop");
-		console.log(shop);
-
 	  const authResponse = await shopify.auth.begin({
-        shop,
+        shop: req.query.shop,
         callbackPath: "/api/auth/tokens",
         isOnline: false,
         rawRequest: req,
