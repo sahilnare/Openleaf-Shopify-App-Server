@@ -1,6 +1,7 @@
 import { DeliveryMethod, shopifyApi } from "@shopify/shopify-api";
 import "dotenv/config";
 import appUninstallHandler from "../server/webhooks/app_uninstalled.js";
+import orderCreatedHandler from '../server/webhooks/order_created.js';
 
 const isDev = process.env.NODE_ENV === "dev";
 
@@ -21,6 +22,11 @@ shopify.webhooks.addHandlers({
     deliveryMethod: DeliveryMethod.Http,
     callbackUrl: "/api/webhooks/app_uninstalled",
     callback: appUninstallHandler,
+  },
+  ORDERS_CREATE: {
+    deliveryMethod: DeliveryMethod.Http,
+    callbackUrl: "/api/webhooks/order_created",
+    callback: orderCreatedHandler,
   },
 });
 

@@ -80,6 +80,7 @@ const authMiddleware = (app) => {
       await sessionHandler.storeSession(session);
 
 	  console.log(session);
+	  // # Have to save Shopify Access Token here
 
       const webhookRegisterResponse = await shopify.webhooks.register({
         session,
