@@ -32,13 +32,18 @@ const authMiddleware = (app) => {
         return res.redirect(`/exitframe?${queryParams}`);
       }
 
-      return await shopify.auth.begin({
+	  const authResponse = await shopify.auth.begin({
         shop: req.query.shop,
         callbackPath: "/api/auth/tokens",
         isOnline: false,
         rawRequest: req,
         rawResponse: res,
       });
+
+	  console.log(authResponse);
+
+      return authResponse;
+
     } catch (e) {
       console.error(`---> Error at /api/auth`, e);
       const { shop } = req.query;
