@@ -147,4 +147,10 @@ userRoutes.get("/debug/createNewSubscription", async (req, res) => {
   });
 });
 
+userRoutes.get("/login/credentials", async (req, res) => {
+  console.log('req.query', req.query);
+  res.redirect('https://dashboard.openleaf.tech/admin/dashboard')
+  res.status(200).send({msg: 'User stored'})
+})
+
 export default userRoutes;

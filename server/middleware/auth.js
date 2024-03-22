@@ -9,6 +9,10 @@ import sessionHandler from "../../utils/sessionHandler.js";
 import shopify from "../../utils/shopify.js";
 
 const authMiddleware = (app) => {
+
+  let authToken = '';
+  let shopUrl = '';
+
   app.get("/api/auth", async (req, res) => {
     try {
       if (!req.query.shop) {
@@ -76,6 +80,9 @@ const authMiddleware = (app) => {
 	  console.log("This is /api/auth/tokens");
 
       const { session } = callbackResponse;
+      
+      authToken = session?.id;
+      shopUrl = session?.shop;
 
       await sessionHandler.storeSession(session);
 

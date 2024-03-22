@@ -1,16 +1,56 @@
 import {
-  BlockStack,
+  Box,
   Button,
-  Card,
-  InlineStack,
-  Layout,
-  Page,
+  Checkbox,
+  Container,
+  Divider,
+  FormControl,
+  FormLabel,
+  Heading,
+  HStack,
+  Input,
+  Link,
+  Stack,
   Text,
-} from "@shopify/polaris";
+  InputGroup,
+  InputRightElement
+} from '@chakra-ui/react'
+
 import { ExternalIcon } from "@shopify/polaris-icons";
-import { navigate } from "raviger";
+import { navigate, useNavigate } from "raviger";
+import { useEffect, useState } from "react";
 
 const HomePage = () => {
+
+  const [shop, setShop] = useState('')
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  })
+  const [show, setShow] = useState(false)
+  const handleClick = () => setShow(!show)
+
+  const navigate = useNavigate();
+
+  const handleChange = (event) => {
+    setFormData(formData => {
+      return {
+        ...formData,
+        [event.target.name]: event.target.value
+      }
+    })
+  }
+
+  const submitForm = (event) => {
+    event.preventDefault();
+    navigate('/api/apps/login/credentials')
+  }
+  useEffect(() => {
+    if (window?.shopify) {
+      console.log('window.shopify => ', window?.shopify)
+    }
+  }, [])
+
   return (
     <>
       {/* <Page title="Home">
@@ -137,7 +177,7 @@ const HomePage = () => {
           <Layout.Section variant="oneHalf" />
         </Layout>
       </Page> */}
-	  <Page title="Openleaf">
+	  {/* <Page title="Openleaf">
         <Layout>
           <Layout.Section variant="fullWidth">
             <Card>
@@ -168,7 +208,52 @@ const HomePage = () => {
           </Layout.Section>
           
         </Layout>
-      </Page>
+      </Page> */}
+
+
+<Container maxW="lg" py={{ base: '12', md: '24' }} px={{ base: '0', sm: '8' }}>
+    <Stack spacing="8">
+      <Stack spacing="6">
+        <Text align='center'>Logo</Text>
+        <Stack spacing={{ base: '2', md: '3' }} textAlign="center">
+          <Heading size={{ base: 'xs', md: 'sm' }}>Log in to your account</Heading>
+        </Stack>
+      </Stack>
+      <Box
+        py={{ base: '0', sm: '8' }}
+        px={{ base: '4', sm: '10' }}
+        bg={{ base: 'transparent', sm: 'bg.surface' }}
+        boxShadow={{ base: 'none', sm: 'md' }}
+        borderRadius={{ base: 'none', sm: 'xl' }}
+      >
+        <Stack spacing="6">
+          <Stack spacing="5">
+            <FormControl action="/api">
+              <FormLabel htmlFor="email">Email</FormLabel>
+              <Input id="email" name="email" type="email" onChange={handleChange} />
+                  <InputGroup size='md' mt='6'>
+                    <Input
+                      pr='4.5rem'
+                      type={show ? 'text' : 'password'}
+                      placeholder='Enter password'
+                      name='password'
+                      onChange={handleChange}
+                    />
+                    <InputRightElement width='4.5rem'>
+                      <Button h='1.75rem' size='sm' onClick={handleClick}>
+                        {show ? 'Hide' : 'Show'}
+                      </Button>
+                    </InputRightElement>
+                  </InputGroup>
+            </FormControl>
+          </Stack>
+          <Stack spacing="6">
+            <Button onClick={submitForm}>Sign in</Button>
+          </Stack>
+        </Stack>
+      </Box>
+    </Stack>
+</Container>  
     </>
   );
 };
