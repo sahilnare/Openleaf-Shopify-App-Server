@@ -3,7 +3,7 @@
 import * as pg from 'pg';
 import dotenv from 'dotenv';
 
-import logger from '../logger.js';
+import logger from './logger';
 
 const { Pool } = pg.default;
 
