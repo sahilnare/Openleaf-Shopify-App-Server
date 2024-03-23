@@ -1,5 +1,7 @@
 import { Router } from "express";
 import clientProvider from "../../utils/clientProvider.js";
+import argon2 from 'argon2'
+import query from "../../utils/dbConnect.js";
 
 const userRoutes = Router();
 
@@ -153,26 +155,25 @@ userRoutes.get("/login/credentials", async (req, res) => {
   // res.status(200).send({msg: 'User stored'})
   const {email, password} = req.query;
 
-  res.status(200).json({message: "into login credentials"})
-  // const { rows } = await query('SELECT * FROM client_users WHERE email = $1', [email])
-  // if (rows.length === 0) {
+  const { rows } = await query('SELECT * FROM client_users WHERE email = $1', [email])
+  if (rows.length === 0) {
 
-	// 	return res.status(401).json({message: 'Invallid Credentials'});
+		return res.status(401).json({message: 'Invallid Credentials'});
 
-	// }
+	}
 
-  // if (await argon2.verify(rows[0].password, password)) {
+  if (await argon2.verify(rows[0].password, password)) {
 
-	// 	// # Get JWT token
-	// 	const { rows: rows1 } = await query('SELECT auth_token FROM client_users WHERE email = $1', [email]);
+		// # Get JWT token
+		const { rows: rows1 } = await query('SELECT auth_token FROM client_users WHERE email = $1', [email]);
 
-	// 	return res.status(200).json({message: 'Login Succesfull', openleaf_auth_token: rows1[0].auth_token})
+		return res.status(200).json({message: 'Login Succesfull', openleaf_auth_token: rows1[0].auth_token})
 
-	// } else {
+	} else {
 
-	// 	return res.status(401).json({message: 'Invallid Credentials'});
+		return res.status(401).json({message: 'Invallid Credentials'});
 
-	// }
+	}
   
 })
 
