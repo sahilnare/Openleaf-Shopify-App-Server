@@ -1,16 +1,43 @@
-import {
-  BlockStack,
-  Button,
-  Card,
-  InlineStack,
-  Layout,
-  Page,
-  Text,
-} from "@shopify/polaris";
-import { ExternalIcon } from "@shopify/polaris-icons";
-import { navigate } from "raviger";
+import { Form, FormLayout, TextField, Button } from "@shopify/polaris";
+import { useNavigate } from "raviger";
+import { useEffect, useState } from "react";
 
 const HomePage = () => {
+
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+
+  const [show, setShow] = useState(false)
+  const handleClick = () => setShow(!show)
+
+  const navigate = useNavigate();
+
+  const fetchData = async () => {
+    const res = await fetch(`/api/apps/login/credentials?email=${email}&password=${password}?shop=${window?.shopify?.config?.shop}`);
+    const result = await res.json();
+    if (res.ok) {
+      console.log('login succesfull')
+      // navigate('https://dashboard.openleaf.tech/auth/login')
+      setErrorMessage(result.message);
+    } else {
+      setErrorMessage(result.message);
+    }
+  }
+
+  const submitForm = (event) => {
+    event.preventDefault();
+    console.log('result and window.shopify', result, window?.shopify);
+    fetchData();
+
+  }
+
+  useEffect(() => {
+    if (window?.shopify) {
+      console.log('window.shopify => ', window?.shopify)
+    }
+  }, [window])
+
   return (
     <>
       {/* <Page title="Home">
@@ -137,7 +164,7 @@ const HomePage = () => {
           <Layout.Section variant="oneHalf" />
         </Layout>
       </Page> */}
-	  <Page title="Openleaf">
+	  {/* <Page title="Openleaf">
         <Layout>
           <Layout.Section variant="fullWidth">
             <Card>
@@ -168,7 +195,38 @@ const HomePage = () => {
           </Layout.Section>
           
         </Layout>
-      </Page>
+      </Page> */}
+
+    <div className="login-container">
+      <img src="../public/openleaf.svg" alt="Openleaf" className="logo" />
+      <Form onSubmit={handleSubmit}>
+        <FormLayout>
+          <TextField
+            label="Email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            type="email"
+            autoComplete="off"
+          />
+          <TextField
+            label="Password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            type="password"
+            autoComplete="off"
+          />
+          {errorMessage && <FormLayout content={errorMessage} error />}
+          <div><h3>New here <a href="https://dashboard.openleaf.tech/auth/register">Create Account</a></h3>
+          </div>
+          <FormLayout>
+            <Button type="submit" onClick={submitForm} primary>
+              Log in
+            </Button>
+          </FormLayout>
+        </FormLayout>
+      </Form>
+    </div>
+
     </>
   );
 };

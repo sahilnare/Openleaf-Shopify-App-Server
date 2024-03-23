@@ -147,4 +147,33 @@ userRoutes.get("/debug/createNewSubscription", async (req, res) => {
   });
 });
 
+userRoutes.get("/login/credentials", async (req, res) => {
+  console.log('req.query in login credentials', req.query);
+  // res.redirect('https://dashboard.openleaf.tech/admin/dashboard')
+  // res.status(200).send({msg: 'User stored'})
+  const {email, password} = req.query;
+
+  res.status(200).json({message: "into login credentials"})
+  // const { rows } = await query('SELECT * FROM client_users WHERE email = $1', [email])
+  // if (rows.length === 0) {
+
+	// 	return res.status(401).json({message: 'Invallid Credentials'});
+
+	// }
+
+  // if (await argon2.verify(rows[0].password, password)) {
+
+	// 	// # Get JWT token
+	// 	const { rows: rows1 } = await query('SELECT auth_token FROM client_users WHERE email = $1', [email]);
+
+	// 	return res.status(200).json({message: 'Login Succesfull', openleaf_auth_token: rows1[0].auth_token})
+
+	// } else {
+
+	// 	return res.status(401).json({message: 'Invallid Credentials'});
+
+	// }
+  
+})
+
 export default userRoutes;
