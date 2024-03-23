@@ -153,7 +153,7 @@ userRoutes.get("/login/credentials", async (req, res) => {
   console.log('req.query in login credentials', req.query);
   // res.redirect('https://dashboard.openleaf.tech/admin/dashboard')
   // res.status(200).send({msg: 'User stored'})
-  const {email, password} = req.query;
+  const {email, password, shop, apikey} = req.query;
 
   const { rows } = await query('SELECT * FROM client_users WHERE email = $1', [email])
   if (rows.length === 0) {
@@ -165,9 +165,13 @@ userRoutes.get("/login/credentials", async (req, res) => {
   if (await argon2.verify(rows[0].password, password)) {
 
 		// # Get JWT token
-		const { rows: rows1 } = await query('SELECT auth_token FROM client_users WHERE email = $1', [email]);
+		const { rows: rows1 } = await query('SELECT user_id FROM client_users WHERE email = $1', [email]);
 
-		return res.status(200).json({message: 'Login Succesfull', openleaf_auth_token: rows1[0].auth_token})
+    const user_id = rows1[0].user_id;
+
+
+    await query('UPDATE shopify_users SET user_id = $1, email = $2, shopify_api_key = $3 WHERE store_url = $4', [user_id, email, apikey, shop]);
+		return res.status(200).json({message: 'Login Succesfull'})
 
 	} else {
 

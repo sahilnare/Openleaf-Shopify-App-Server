@@ -1,20 +1,20 @@
 import { Form, FormLayout, TextField, Button, Text } from "@shopify/polaris";
 import { useNavigate } from "raviger";
 import { useEffect, useState } from "react";
+import "./index.css";
 
 const HomePage = () => {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
-
-  const [show, setShow] = useState(false)
-  const handleClick = () => setShow(!show)
+  const [apiKey, setApiKey] = useState('')
+  const [shopUrl, setShopUrl] = useState('')
 
   const navigate = useNavigate();
 
   const fetchData = async () => {
-    const res = await fetch(`/api/apps/login/credentials?email=${email}&password=${password}?shop=${window?.shopify?.config?.shop}`);
+    const res = await fetch(`/api/apps/login/credentials?email=${email}&password=${password}?shop=${shopUrl}&apikey=${apiKey}`);
     const result = await res.json();
     if (res.ok) {
       console.log('login succesfull')
@@ -33,7 +33,9 @@ const HomePage = () => {
   }
 
   useEffect(() => {
-    if (window?.shopify) {
+    if (window?.shopify?.config) {
+      setApiKey(window?.shopify?.config?.apiKey)
+      setS
       console.log('window.shopify => ', window?.shopify)
     }
   }, [window])
@@ -215,10 +217,24 @@ const HomePage = () => {
           <TextField
             label="Password"
             value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) => {
+              console.log(event);
+              setPassword(event.target.value)
+            }}
             type="password"
             autoComplete="off"
           />
+
+          <h1>Temp Testing</h1>
+          <input type="text" value={email} onChange={(event) => {
+            setEmail(event.target.value)
+            console.log(email)
+          }} />
+          <input type="text" value={email} onChange={(event) => {
+            setEmail(event.target.value)
+            console.log(email)
+          }} />
+
           {errorMessage && <FormLayout content={errorMessage} error />}
           <div>
             <h3>

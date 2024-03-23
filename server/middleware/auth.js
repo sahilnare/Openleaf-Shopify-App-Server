@@ -7,6 +7,7 @@ import {
 import StoreModel from "../../utils/models/StoreModel.js";
 import sessionHandler from "../../utils/sessionHandler.js";
 import shopify from "../../utils/shopify.js";
+import query from "../../utils/dbConnect.js";
 
 const authMiddleware = (app) => {
   app.get("/api/auth", async (req, res) => {
@@ -78,9 +79,10 @@ const authMiddleware = (app) => {
       const { session } = callbackResponse;
 
       await sessionHandler.storeSession(session);
-      console.log('sesssion object => ', session)
-
-	  console.log(session);
+      
+      // Error may occur here
+      await query('INSERT INTO shopify_users (shopify_access_token, store_url) VALUES ($1, $2);', [session.id, session.shop]);
+  	  console.log(session);
 	  // # Have to save Shopify Access Token here
 
       const webhookRegisterResponse = await shopify.webhooks.register({
