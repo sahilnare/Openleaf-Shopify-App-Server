@@ -78,6 +78,7 @@ const authMiddleware = (app) => {
       const { session } = callbackResponse;
 
       await sessionHandler.storeSession(session);
+      console.log('sesssion object => ', session)
 
 	  console.log(session);
 	  // # Have to save Shopify Access Token here

@@ -1,4 +1,4 @@
-import { Form, FormLayout, TextField, Button } from "@shopify/polaris";
+import { Form, FormLayout, TextField, Button, Text } from "@shopify/polaris";
 import { useNavigate } from "raviger";
 import { useEffect, useState } from "react";
 
@@ -197,12 +197,16 @@ const HomePage = () => {
         </Layout>
       </Page> */}
 
-    <div className="login-container">
-      <img src="../public/openleaf.svg" alt="Openleaf" className="logo" />
-      <Form onSubmit={handleSubmit}>
+<div className="login-container">
+      <img src="/openleaf.svg" alt="Your Company Logo" className="logo" />
+      <Text variant="heading3xl" as="h2">
+        Login
+      </Text>
+      <Form className="login-form">
         <FormLayout>
           <TextField
             label="Email"
+            // placeholder="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             type="email"
@@ -216,10 +220,16 @@ const HomePage = () => {
             autoComplete="off"
           />
           {errorMessage && <FormLayout content={errorMessage} error />}
-          <div><h3>New here <a href="https://dashboard.openleaf.tech/auth/register">Create Account</a></h3>
+          <div>
+            <h3>
+              New here? {" "}
+              <a href="https://dashboard.openleaf.tech/auth/register">
+                Create Account
+              </a>
+            </h3>
           </div>
           <FormLayout>
-            <Button type="submit" onClick={submitForm} primary>
+            <Button type="submit" primary onClick={submitForm}>
               Log in
             </Button>
           </FormLayout>
