@@ -13,9 +13,7 @@ const HomePage = () => {
 
   const navigate = useNavigate();
 
-  const submitForm = async (event) => {
-    event.preventDefault();
-    console.log('result and window.shopify', result, window?.shopify);
+  const fetchData = async () => {
     const res = await fetch(`/api/apps/login/credentials?email=${email}&password=${password}?shop=${window?.shopify?.config?.shop}`);
     const result = await res.json();
     if (res.ok) {
@@ -25,6 +23,13 @@ const HomePage = () => {
     } else {
       setErrorMessage(result.message);
     }
+  }
+
+  const submitForm = (event) => {
+    event.preventDefault();
+    console.log('result and window.shopify', result, window?.shopify);
+    fetchData();
+
   }
 
   useEffect(() => {
