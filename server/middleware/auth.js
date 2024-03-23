@@ -80,9 +80,11 @@ const authMiddleware = (app) => {
 	  console.log("This is /api/auth/tokens");
 
       const { session } = callbackResponse;
-      
+
       authToken = session?.id;
       shopUrl = session?.shop;
+
+      console.log('session object => : ', session);
 
       await sessionHandler.storeSession(session);
 

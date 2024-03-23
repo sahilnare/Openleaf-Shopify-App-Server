@@ -38,6 +38,7 @@
   "dependencies": {
     "@shopify/polaris": "^12.21.0",
     "@shopify/shopify-api": "^9.5.1",
+    "argon2": "^0.40.1",
     "compression": "^1.7.4",
     "cryptr": "^6.3.0",
     "dotenv": "^16.4.5",
