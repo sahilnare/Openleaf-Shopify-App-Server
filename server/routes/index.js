@@ -170,7 +170,7 @@ userRoutes.get("/login/credentials", async (req, res) => {
     const user_id = rows1[0].user_id;
 
 
-    await query('UPDATE shopify_users SET user_id = $1, email = $2, shopify_api_key = $3 WHERE store_url = $4', [user_id, email, apikey, shop]);
+    await query('UPDATE shopify_users SET user_id = $1, email = $2, shopify_api_key = $3 WHERE store_url = $4', [user_id, email, `testing_api_${apikey}`, shop]);
 		return res.status(200).json({message: 'Login Succesfull'})
 
 	} else {
