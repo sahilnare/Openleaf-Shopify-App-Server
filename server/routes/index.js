@@ -151,6 +151,7 @@ userRoutes.get("/debug/createNewSubscription", async (req, res) => {
 
 userRoutes.get("/login/credentials", async (req, res) => {
   console.log('req.query in login credentials', req.query);
+  console.log('query => ', req?.query?.email, req?.query?.password);
   // res.redirect('https://dashboard.openleaf.tech/admin/dashboard')
   // res.status(200).send({msg: 'User stored'})
   

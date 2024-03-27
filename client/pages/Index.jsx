@@ -28,15 +28,24 @@ const HomePage = () => {
 
   const submitForm = (event) => {
     // event.preventDefault();
-    console.log('result and window.shopify', result, window?.shopify);
-    fetchData();
+    console.log('result and window.shopify', window?.shopify);
+    try {
+      fetchData();
+    } catch (error) {
+      console.log('error in submit from => ', error);
+    }
 
   }
 
-  const handleChange = useCallback(
-    (newValue) => setValue(newValue),
+  const handleEmail = useCallback(
+    (newValue) => setEmail(newValue),
     [],
   );
+
+  const handlePassword = useCallback(
+    (newValue) => setPassword(newValue),
+    [],
+  )
 
   useEffect(() => {
     if (window?.shopify?.config) {
@@ -53,20 +62,22 @@ const HomePage = () => {
       <Text variant="heading3xl" as="h2">
         Login
       </Text>
+      <br></br>
+      <br></br>
       <Form className="login-form">
         <FormLayout>
           <TextField
             label="Email"
             // placeholder="email"
             value={email}
-            onChange={handleChange}
+            onChange={handleEmail}
             type="email"
             autoComplete="off"
           />
           <TextField
             label="Password"
             value={password}
-            onChange={handleChange}
+            onChange={handlePassword}
             type="password"
             autoComplete="off"
           />
@@ -77,7 +88,7 @@ const HomePage = () => {
             console.log(email)
           }} />
           <input type="text" value={email} onChange={(event) => {
-            setEmail(event.target.value)
+            setPassword(event.target.value)
             console.log(email)
           }} />
           <button onClick={submitForm}>Login</button>
