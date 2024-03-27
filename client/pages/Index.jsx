@@ -7,23 +7,42 @@ const HomePage = () => {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
   const [apiKey, setApiKey] = useState('')
   const [shopUrl, setShopUrl] = useState('')
+  const [isUserLogin, setIsUserLogin] = useState(false)
+  const [loader, setLoader] = useState(true)
 
   const navigate = useNavigate();
 
+  const checkLogin = async () => {
+    const res = await fetch(`/api/apps/islogin?shop=${shop}`);
+    console.log('response login => ', res);
+    const result = await res.json();
+    if (res.ok) {
+      console.log('user already present');
+      setErrorMessage(result.message);
+      setIsUserLogin(true);
+    } else {
+      setErrorMessage(result.message);
+    }
+    setLoader(false);
+  }
+
   const fetchData = async () => {
+    setLoader(true)
     const res = await fetch(`/api/apps/login/credentials?email=${email}&password=${password}&shop=${shopUrl}&apikey=${apiKey}`);
     console.log('response: => ', res);
     const result = await res.json();
     if (res.ok) {
       console.log('login succesfull', result)
+      setIsUserLogin(true)
       // navigate('https://dashboard.openleaf.tech/auth/login')
       setErrorMessage(result.message);
     } else {
       setErrorMessage(result.message);
     }
+    setLoader(false);
   }
 
   const submitForm = (event) => {
@@ -52,15 +71,22 @@ const HomePage = () => {
       setApiKey(window?.shopify?.config?.apiKey)
       setShopUrl(window?.shopify?.config?.shop)
       console.log('window.shopify => ', window?.shopify)
+      checkLogin();
     }
   }, [window])
+
+  if (isUserLogin) {
+    return (
+      <Text variant="heading3xl">Already Register to Openleaf</Text>
+    )
+  }
 
   return (
     <>
 <div className="login-container">
       <img src="/openleaf.svg" alt="Your Company Logo" className="logo" />
       <Text variant="heading3xl" as="h2">
-        Login
+        { loader ? 'Loading' : "Login"}
       </Text>
       <br></br>
       <br></br>
@@ -83,6 +109,7 @@ const HomePage = () => {
           />
 
           {errorMessage && <FormLayout content={errorMessage} error />}
+          {errorMessage && <h1>{errorMessage}</h1>}
           <div>
             <h3>
               New here? {" "}

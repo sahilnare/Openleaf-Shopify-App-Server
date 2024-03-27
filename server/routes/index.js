@@ -174,6 +174,11 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
     }
 
+    const { rows: shopify_user_rows } = await query('SELECT * FROM shopify_users WHERE store_url = $1', [`https://${shop}/`])
+    if (shopify_user_rows !== 0) {
+      return res.status(200).json({message: 'User already present!'});
+    }
+
     if (await argon2.verify(rows[0].password, password)) {
 
       // # Get JWT token
@@ -203,7 +208,7 @@ userRoutes.get("/login/credentials", async (req, res) => {
       //   'manual',
       //   `https://${shop}`]);
 
-      return res.status(200).json({message: 'Login Succesfull'})
+      return res.status(201).json({message: 'Shopify User successfully created.'})
 
     } else {
 
@@ -213,8 +218,28 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
   } catch (error) {
     console.log(error);
+    return res.status(500).json({error})
   }
   
+})
+
+userRoutes.get('/islogin', async (req, res) => {
+  console.log('req.query in islogin =>', req?.query);
+
+  const { shop } = req.query;
+  try {
+    
+    const { rows } = await query('SELECT * FROM shopify_users WHERE store_url = $1', [`https://${shop}/`])
+    if (rows.length === 0) {
+      return res.status(401).json({message: "Shop not present", isUser: false})
+    } else {
+      return res.status(200).json({message: "User already present with this shop", isUser: true})
+    }
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({error, isUser: false})
+  }
 })
 
 export default userRoutes;
