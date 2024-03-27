@@ -14,7 +14,7 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   const fetchData = async () => {
-    const res = await fetch(`/api/apps/login/credentials?email=${email}&password=${password}?shop=${shopUrl}&apikey=${apiKey}`);
+    const res = await fetch(`/api/apps/login/credentials?email=${email}&password=${password}&shop=${shopUrl}&apikey=${apiKey}`);
     console.log('response: => ', res);
     const result = await res.json();
     if (res.ok) {
@@ -82,19 +82,6 @@ const HomePage = () => {
             autoComplete="off"
           />
 
-          <h1>Temp Testing</h1>
-          <input type="text" value={email} onChange={(event) => {
-            setEmail(event.target.value)
-            console.log(email)
-          }} />
-          <input type="text" value={email} onChange={(event) => {
-            setPassword(event.target.value)
-            console.log(email)
-          }} />
-          <button onClick={submitForm}>Login</button>
-
-          <br></br>
-
           {errorMessage && <FormLayout content={errorMessage} error />}
           <div>
             <h3>
@@ -108,8 +95,6 @@ const HomePage = () => {
             <Button primary onClick={submitForm}>
               Log in
             </Button>
-
-            <Button canAccessEvent onClick={submitForm}>Event access button</Button>
           </FormLayout>
         </FormLayout>
       </Form>

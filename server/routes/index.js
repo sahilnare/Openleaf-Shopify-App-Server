@@ -1,7 +1,7 @@
 import { Router } from "express";
 import clientProvider from "../../utils/clientProvider.js";
 import argon2 from 'argon2'
-// import query from "../../utils/dbConnect.js";
+import query from "../../utils/dbConnect.js";
 
 const userRoutes = Router();
 
@@ -155,8 +155,8 @@ userRoutes.get("/login/credentials", async (req, res) => {
   // res.redirect('https://dashboard.openleaf.tech/admin/dashboard')
   // res.status(200).send({msg: 'User stored'})
   
+  const {email, password, shop, apikey} = req.query;
   try {
-    const {email, password, shop, apikey} = req.query;
     return res.status(200).json({email, password, shop, apikey});
   } catch (error) {
     console.log('error', error);

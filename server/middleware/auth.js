@@ -7,7 +7,7 @@ import {
 import StoreModel from "../../utils/models/StoreModel.js";
 import sessionHandler from "../../utils/sessionHandler.js";
 import shopify from "../../utils/shopify.js";
-// import query from "../../utils/dbConnect.js";
+import query from "../../utils/dbConnect.js";
 
 const authMiddleware = (app) => {
   app.get("/api/auth", async (req, res) => {
