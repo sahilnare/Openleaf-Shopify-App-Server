@@ -9,14 +9,14 @@ const HomePage = () => {
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
   const [apiKey, setApiKey] = useState('')
-  const [shopUrl, setShopUrl] = useState('')
+  const [shopUrl, setShopUrl] = useState(null)
   const [isUserLogin, setIsUserLogin] = useState(false)
   const [loader, setLoader] = useState(true)
 
   const navigate = useNavigate();
 
-  const checkLogin = async () => {
-    const res = await fetch(`/api/apps/islogin?shop=${shop}`);
+  const checkLogin = async (shop_url) => {
+    const res = await fetch(`/api/apps/islogin?shop=${shop_url}`);
     console.log('response login => ', res);
     const result = await res.json();
     if (res.ok) {
@@ -71,13 +71,18 @@ const HomePage = () => {
       setApiKey(window?.shopify?.config?.apiKey)
       setShopUrl(window?.shopify?.config?.shop)
       console.log('window.shopify => ', window?.shopify)
-      checkLogin();
     }
   }, [window])
 
+  useEffect(() => {
+    if (shopUrl) {
+      checkLogin(shopUrl)
+    }
+  }, [shopUrl])
+
   if (isUserLogin) {
     return (
-      <Text variant="heading3xl">Already Register to Openleaf</Text>
+      <Text variant="heading3xl" alignment="center" tone="success">Already Register to Openleaf</Text>
     )
   }
 
