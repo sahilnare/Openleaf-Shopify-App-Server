@@ -1,6 +1,6 @@
 import { Form, FormLayout, TextField, Button, Text } from "@shopify/polaris";
 import { useNavigate } from "raviger";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import "./index.css";
 
 const HomePage = () => {
@@ -33,6 +33,11 @@ const HomePage = () => {
 
   }
 
+  const handleChange = useCallback(
+    (newValue) => setValue(newValue),
+    [],
+  );
+
   useEffect(() => {
     if (window?.shopify?.config) {
       setApiKey(window?.shopify?.config?.apiKey)
@@ -54,20 +59,14 @@ const HomePage = () => {
             label="Email"
             // placeholder="email"
             value={email}
-            onChange={(event) => {
-              console.log('event => ', event);
-              setEmail(event.target.value)
-            }}
+            onChange={handleChange}
             type="email"
             autoComplete="off"
           />
           <TextField
             label="Password"
             value={password}
-            onChange={(event) => {
-              console.log(event);
-              setPassword(event.target.value)
-            }}
+            onChange={handleChange}
             type="password"
             autoComplete="off"
           />

@@ -7,7 +7,7 @@ import {
 import StoreModel from "../../utils/models/StoreModel.js";
 import sessionHandler from "../../utils/sessionHandler.js";
 import shopify from "../../utils/shopify.js";
-import query from "../../utils/dbConnect.js";
+// import query from "../../utils/dbConnect.js";
 
 const authMiddleware = (app) => {
   app.get("/api/auth", async (req, res) => {
@@ -81,12 +81,12 @@ const authMiddleware = (app) => {
       await sessionHandler.storeSession(session);
       
       // Error may occur here
-      try {
-        await query('INSERT INTO shopify_users (shopify_access_token, store_url) VALUES ($1, $2);', [session.id, session.shop]);
+      // try {
+      //   await query('INSERT INTO shopify_users (shopify_access_token, store_url) VALUES ($1, $2);', [session.id, session.shop]);
         
-      } catch (error) {
-        console.log('Postgress error =>', error)
-      }
+      // } catch (error) {
+      //   console.log('Postgress error =>', error)
+      // }
   	  console.log(session);
 	  // # Have to save Shopify Access Token here
 
