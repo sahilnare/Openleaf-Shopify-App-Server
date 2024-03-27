@@ -81,12 +81,12 @@ const authMiddleware = (app) => {
       await sessionHandler.storeSession(session);
       
       // Error may occur here
-      // try {
-      //   await query('INSERT INTO shopify_users (shopify_access_token, store_url) VALUES ($1, $2);', [session.id, session.shop]);
+      try {
+        await query('INSERT INTO shopify_users (shopify_access_token, store_url) VALUES ($1, $2);', [session?.accessToken, session?.shop]);
         
-      // } catch (error) {
-      //   console.log('Postgress error =>', error)
-      // }
+      } catch (error) {
+        console.log('Postgress error =>', error)
+      }
   	  console.log(session);
 	  // # Have to save Shopify Access Token here
 

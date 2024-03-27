@@ -156,38 +156,44 @@ userRoutes.get("/login/credentials", async (req, res) => {
   // res.status(200).send({msg: 'User stored'})
   
   const {email, password, shop, apikey} = req.query;
-  try {
-    return res.status(200).json({email, password, shop, apikey});
-  } catch (error) {
-    console.log('error', error);
-    return res.status(500).json({error})
-  }
+  // try {
+  //   return res.status(200).json({email, password, shop, apikey});
+  // } catch (error) {
+  //   console.log('error', error);
+  //   return res.status(500).json({error})
+  // }
 
   
 
-  // const { rows } = await query('SELECT * FROM client_users WHERE email = $1', [email])
-  // if (rows.length === 0) {
+  try {
+    
+    const { rows } = await query('SELECT * FROM client_users WHERE email = $1', [email])
+    if (rows.length === 0) {
 
-	// 	return res.status(401).json({message: 'Invallid Credentials'});
+      return res.status(401).json({message: 'Invallid Credentials'});
 
-	// }
+    }
 
-  // if (await argon2.verify(rows[0].password, password)) {
+    if (await argon2.verify(rows[0].password, password)) {
 
-	// 	// # Get JWT token
-	// 	const { rows: rows1 } = await query('SELECT user_id FROM client_users WHERE email = $1', [email]);
+      // # Get JWT token
+      const { rows: rows1 } = await query('SELECT user_id FROM client_users WHERE email = $1', [email]);
 
-  //   const user_id = rows1[0].user_id;
+      const user_id = rows1[0].user_id;
 
 
-  //   await query('UPDATE shopify_users SET user_id = $1, email = $2, shopify_api_key = $3 WHERE store_url = $4', [user_id, email, `testing_api_${apikey}`, shop]);
-	// 	return res.status(200).json({message: 'Login Succesfull'})
+      await query('UPDATE shopify_users SET user_id = $1, email = $2, shopify_api_key = $3 WHERE store_url = $4', [user_id, email, `testing_api_${apikey}`, shop]);
+      return res.status(200).json({message: 'Login Succesfull'})
 
-	// } else {
+    } else {
 
-	// 	return res.status(401).json({message: 'Invallid Credentials'});
+      return res.status(401).json({message: 'Invallid Credentials'});
 
-	// }
+    }
+
+  } catch (error) {
+    console.log(error);
+  }
   
 })
 
