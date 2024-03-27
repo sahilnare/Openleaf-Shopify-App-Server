@@ -152,18 +152,7 @@ userRoutes.get("/debug/createNewSubscription", async (req, res) => {
 userRoutes.get("/login/credentials", async (req, res) => {
   console.log('req.query in login credentials', req?.query);
   console.log('query => ', req?.query?.email, req?.query?.password);
-  // res.redirect('https://dashboard.openleaf.tech/admin/dashboard')
-  // res.status(200).send({msg: 'User stored'})
-  
   const {email, password, shop, apikey} = req.query;
-  // try {
-  //   return res.status(200).json({email, password, shop, apikey});
-  // } catch (error) {
-  //   console.log('error', error);
-  //   return res.status(500).json({error})
-  // }
-
-  
 
   try {
     
@@ -201,12 +190,44 @@ userRoutes.get("/login/credentials", async (req, res) => {
         `https://${shop}/`
       ])
 
-      // await query('UPDATE shopify_users SET user_id = $1, email = $2, shopify_api_key = $3, shipping_mode = $4 WHERE store_url = $5', [
-      //   user_id, 
-      //   email, 
-      //   apikey, 
-      //   'manual',
-      //   `https://${shop}`]);
+      const url = `https://${shop}/admin/api/2024-01/locations.json`;
+
+      const options = {
+        method: 'GET',
+        headers: {
+          'X-Shopify-Access-Token': `${shopify_access_token}`,
+          'Content-Type': 'application/json'
+        }
+      };
+
+      const response = await fetch(url, options);
+
+      const result = await response.json();
+      const locations = result.data.locations;
+
+      const { rows: pickup_locations_rows } = await query('SELECT * FROM pickup_locations WHERE user_id = $1', [user_id]);
+      const wareHouseName = pickup_locations_rows[0].warehouse_name;
+      
+      if (pickup_locations_rows.length === 0) {
+
+        return res.status(400).json(`No pickup location found `);
+
+      }
+
+      let shopify_location_query = `INSERT INTO shopify_locations (shopify_assigned_location, user_id, pickup_location) VALUES `
+      const insertValue = []
+      let startValue = 0;
+      for (let index = 1; index <= locations.length; index+= 1) {
+        shopify_location_query += `($${index + startValue}, $${index + startValue + 1}, $${index + startValue + 2})`;
+        if (index !== locations.length) {
+          shopify_location_query += ', '
+        }
+        insertValue.push(locations[index-1].name, user_id, wareHouseName)	
+        startValue += 2
+      }
+    
+      console.log('Inserting location values', shopify_location_query, insertValue);
+      await query(shopify_location_query, insertValue)
 
       return res.status(201).json({message: 'Shopify User successfully created.'})
 
