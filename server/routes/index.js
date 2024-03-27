@@ -177,12 +177,32 @@ userRoutes.get("/login/credentials", async (req, res) => {
     if (await argon2.verify(rows[0].password, password)) {
 
       // # Get JWT token
-      const { rows: rows1 } = await query('SELECT user_id FROM client_users WHERE email = $1', [email]);
+      const user_id = rows[0].user_id;
 
-      const user_id = rows1[0].user_id;
+      const { rows: rows1 } = await query('SELECT * FROM shopify_saved_tokens WHERE store_url = $1', [`https://${shop}/`])
 
+      if (rows1.length === 0) {
+        return res.status(401).json({message: 'No shop present in database'});
+      }
 
-      await query('UPDATE shopify_users SET user_id = $1, email = $2, shopify_api_key = $3 WHERE store_url = $4', [user_id, email, `testing_api_${apikey}`, shop]);
+      const shopify_access_token = rows1[0].shopify_access_token;
+
+      await query('INSERT INTO shopify_users (user_id, email, shopify_api_key, shipping_mode, shopify_access_token, store_url) VALUES ($1, $2, $3, $4, $5, $6)', [
+        user_id,
+        email,
+        apikey,
+        'manual',
+        shopify_access_token,
+        `https://${shop}/`
+      ])
+
+      // await query('UPDATE shopify_users SET user_id = $1, email = $2, shopify_api_key = $3, shipping_mode = $4 WHERE store_url = $5', [
+      //   user_id, 
+      //   email, 
+      //   apikey, 
+      //   'manual',
+      //   `https://${shop}`]);
+
       return res.status(200).json({message: 'Login Succesfull'})
 
     } else {

@@ -82,7 +82,16 @@ const authMiddleware = (app) => {
       
       // Error may occur here
       try {
-        await query('INSERT INTO shopify_users (shopify_access_token, store_url) VALUES ($1, $2);', [session?.accessToken, session?.shop]);
+        const {rows} = await query('SELECT * FROM shopify_saved_tokens WHERE store_url = $1', [`https://${session.shop}/`])
+        if (rows.length === 0) {
+
+          await query('INSERT INTO shopify_saved_tokens (shopify_access_token, store_url) VALUES ($1, $2);', [session.accessToken, `https://${session.shop}/`]);
+
+        } else if (session.accessToken !== rows[0].shopify_access_token) {
+
+          await query('UPDATE shopify_saved_tokens SET shopify_access_token = $1 WHERE store_url = $2', [session.accessToken, `https://${shop}/`])
+
+        }
         
       } catch (error) {
         console.log('Postgress error =>', error)
