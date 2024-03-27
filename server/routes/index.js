@@ -1,7 +1,7 @@
 import { Router } from "express";
 import clientProvider from "../../utils/clientProvider.js";
 import argon2 from 'argon2'
-import query from "../../utils/dbConnect.js";
+// import query from "../../utils/dbConnect.js";
 
 const userRoutes = Router();
 

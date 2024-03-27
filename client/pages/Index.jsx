@@ -27,7 +27,7 @@ const HomePage = () => {
   }
 
   const submitForm = (event) => {
-    event.preventDefault();
+    // event.preventDefault();
     console.log('result and window.shopify', result, window?.shopify);
     fetchData();
 
@@ -41,7 +41,7 @@ const HomePage = () => {
   useEffect(() => {
     if (window?.shopify?.config) {
       setApiKey(window?.shopify?.config?.apiKey)
-      setS
+      setShopUrl(window?.shopify?.config?.shop)
       console.log('window.shopify => ', window?.shopify)
     }
   }, [window])
@@ -94,9 +94,11 @@ const HomePage = () => {
             </h3>
           </div>
           <FormLayout>
-            <Button type="submit" primary onClick={submitForm}>
+            <Button primary onClick={submitForm}>
               Log in
             </Button>
+
+            <Button canAccessEvent onClick={submitForm}>Event access button</Button>
           </FormLayout>
         </FormLayout>
       </Form>
