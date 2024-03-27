@@ -82,7 +82,7 @@ const HomePage = () => {
 
   if (isUserLogin) {
     return (
-      <Text variant="heading3xl" alignment="center" tone="success">Already Register to Openleaf</Text>
+      <Text variant="heading3xl" alignment="center" tone="success">Register Successfully on Openleaf</Text>
     )
   }
 
@@ -91,7 +91,7 @@ const HomePage = () => {
 <div className="login-container">
       <img src="/openleaf.svg" alt="Your Company Logo" className="logo" />
       <Text variant="heading3xl" as="h2">
-        { loader ? 'Loading' : "Login"}
+        Login
       </Text>
       <br></br>
       <br></br>
@@ -125,7 +125,7 @@ const HomePage = () => {
           </div>
           <FormLayout>
             <Button primary onClick={submitForm}>
-              Log in
+              {loader ? 'Loading...' : 'Log In'}
             </Button>
           </FormLayout>
         </FormLayout>
