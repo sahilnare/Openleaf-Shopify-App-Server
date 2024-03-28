@@ -1,4 +1,4 @@
-import query from "../../utils/dbConnect";
+import query from "../../utils/dbConnect.js";
 
 export const insertShopifyUser = async (user_id, email, shopifyApiKey, shippingMode, shopifyAccessToken, shopUrl) => {
 
@@ -39,12 +39,12 @@ export const insertShopifyLocation = async (wareHouseName, locations) => {
     for (let index = 1; index <= locations?.length; index+= 1) {
         shopify_location_query += `($${index + startValue}, $${index + startValue + 1}, $${index + startValue + 2})`;
         if (index !== locations.length) {
-        shopify_location_query += ', '
+            shopify_location_query += ', '
         }
-        insertValue.push(locations[index-1].name, user_id, wareHouseName)	
+        insertValue.push(locations[index-1].name, user_id, wareHouseName);
         startValue += 2
     }
     
-    await query(shopify_location_query, insertValue)
+    await query(shopify_location_query, insertValue);
 
 }
