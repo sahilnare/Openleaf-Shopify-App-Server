@@ -2,6 +2,9 @@ import { Router } from "express";
 import clientProvider from "../../utils/clientProvider.js";
 import argon2 from 'argon2'
 import query from "../../utils/dbConnect.js";
+import shopify from "../../utils/shopify.js";
+import openleafOrderCreated from "../webhooks/openleaf_order_create.js";
+import { DeliveryMethod } from "@shopify/shopify-api";
 
 const userRoutes = Router();
 
@@ -174,7 +177,7 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
       const shopify_access_token = rows1[0].shopify_access_token;
 
-      await query('INSERT INTO shopify_users (user_id, email, shopify_api_key, shipping_mode, shopify_access_token, store_url) VALUES ($1, $2, $3, $4, $5, $6)', [
+      const { rows: shopify_user_rows} = await query('INSERT INTO shopify_users (user_id, email, shopify_api_key, shipping_mode, shopify_access_token, store_url) VALUES ($1, $2, $3, $4, $5, $6) RETURNING webhook_id', [
         user_id,
         email,
         apikey,
@@ -182,6 +185,14 @@ userRoutes.get("/login/credentials", async (req, res) => {
         shopify_access_token,
         `https://${shop}/`
       ])
+
+      const webhookId = shopify_user_rows[0].webhook_id;
+
+      shopify.webhooks.addHandlers({
+        deliveryMethod: DeliveryMethod.Http,
+        callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`,
+        callback: openleafOrderCreated
+      })
 
       const url = `https://${shop}/admin/api/2024-01/locations.json`;
       const options = {
