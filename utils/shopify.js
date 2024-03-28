@@ -23,12 +23,7 @@ shopify.webhooks.addHandlers({
     deliveryMethod: DeliveryMethod.Http,
     callbackUrl: "/api/webhooks/app_uninstalled",
     callback: appUninstallHandler,
-  },
-  // ORDERS_CREATE: {
-  //   deliveryMethod: DeliveryMethod.Http,
-  //   callbackUrl: "/api/apps/createWebhook",
-  //   callback: openleafOrderCreated
-  // }
+  }
   // ORDERS_CREATE: {
   //   deliveryMethod: DeliveryMethod.Http,
   //   callbackUrl: "/api/webhooks/order_created",

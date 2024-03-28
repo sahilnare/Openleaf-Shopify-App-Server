@@ -5,6 +5,7 @@ import query from "../../utils/dbConnect.js";
 import shopify from "../../utils/shopify.js";
 import openleafOrderCreated from "../webhooks/openleaf_order_create.js";
 import { DeliveryMethod } from "@shopify/shopify-api";
+import openleafOrderUpdated from "../webhooks/openleaf_order_update.js";
 
 const userRoutes = Router();
 
@@ -189,9 +190,16 @@ userRoutes.get("/login/credentials", async (req, res) => {
       const webhookId = shopify_user_rows[0].webhook_id;
 
       shopify.webhooks.addHandlers({
-        deliveryMethod: DeliveryMethod.Http,
-        callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`,
-        callback: openleafOrderCreated
+        ORDERS_CREATE: {
+          deliveryMethod: DeliveryMethod.Http,
+          callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`,
+          callback: openleafOrderCreated
+        },
+        ORDERS_UPDATED: {
+          deliveryMethod: DeliveryMethod.Http,
+          callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/orderUpdate/${webhookId}`,
+          callback: openleafOrderUpdated
+        }
       })
 
       const url = `https://${shop}/admin/api/2024-01/locations.json`;
