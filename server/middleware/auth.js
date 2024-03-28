@@ -99,7 +99,7 @@ const authMiddleware = (app) => {
 
         } else if (session.accessToken !== rows[0].shopify_access_token) {
 
-          await query('UPDATE shopify_saved_tokens SET shopify_access_token = $1 WHERE store_url = $2', [session.accessToken, `https://${shop}/`])
+          await query('UPDATE shopify_saved_tokens SET shopify_access_token = $1 WHERE store_url = $2', [session.accessToken, `https://${session.shop}/`])
 
         }
         
@@ -153,6 +153,15 @@ const authMiddleware = (app) => {
 
       const { session } = callbackResponse;
       await sessionHandler.storeSession(session);
+
+      try {
+        const locations = await shopify.rest.Locations.all({
+          session: session
+        })
+        console.log(locations);
+      } catch (error) {
+        console.log(error);
+      }
 
       const host = req.query.host;
       const { shop } = session;
