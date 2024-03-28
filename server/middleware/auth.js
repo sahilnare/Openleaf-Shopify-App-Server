@@ -3,6 +3,7 @@ import {
   CookieNotFound,
   InvalidOAuthError,
   InvalidSession,
+  shopifyApi,
 } from "@shopify/shopify-api";
 import StoreModel from "../../utils/models/StoreModel.js";
 import sessionHandler from "../../utils/sessionHandler.js";
@@ -77,6 +78,15 @@ const authMiddleware = (app) => {
 	  console.log("This is /api/auth/tokens");
 
       const { session } = callbackResponse;
+
+      try {
+        const locations = await shopify.rest.Locations.all({
+          session: session
+        })
+        console.log(locations);
+      } catch (error) {
+        console.log(error);
+      }
 
       await sessionHandler.storeSession(session);
       

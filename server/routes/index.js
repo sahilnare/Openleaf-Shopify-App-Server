@@ -182,17 +182,18 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
       const shopify_access_token = rows1[0].shopify_access_token;
 
-      await query('INSERT INTO shopify_users (user_id, email, shopify_api_key, shipping_mode, shopify_access_token, store_url) VALUES ($1, $2, $3, $4, $5, $6)', [
-        user_id,
-        email,
-        apikey,
-        'manual',
-        shopify_access_token,
-        `https://${shop}/`
-      ])
+      // # Uncomment it afterward. This is for testing purpose.
+      // await query('INSERT INTO shopify_users (user_id, email, shopify_api_key, shipping_mode, shopify_access_token, store_url) VALUES ($1, $2, $3, $4, $5, $6)', [
+      //   user_id,
+      //   email,
+      //   apikey,
+      //   'manual',
+      //   shopify_access_token,
+      //   `https://${shop}/`
+      // ])
 
       const url = `https://${shop}/admin/api/2024-01/locations.json`;
-
+      console.log(shopify_access_token);
       const options = {
         method: 'GET',
         headers: {
@@ -204,17 +205,19 @@ userRoutes.get("/login/credentials", async (req, res) => {
       const response = await fetch(url, options);
 
       const result = await response.json();
-      console.log(result, result?.data);
+      console.log(result, result?.data, result?.locations);
       const locations = result?.locations;
 
       const { rows: pickup_locations_rows } = await query('SELECT * FROM pickup_locations WHERE user_id = $1', [user_id]);
-      const wareHouseName = pickup_locations_rows[0].warehouse_name;
+      console.log('pickupLocations => ', pickup_locations_rows)
       
       if (pickup_locations_rows.length === 0) {
 
         return res.status(400).json(`No pickup location found `);
 
       }
+
+      const wareHouseName = pickup_locations_rows[0].warehouse_name;
 
       let shopify_location_query = `INSERT INTO shopify_locations (shopify_assigned_location, user_id, pickup_location) VALUES `
       const insertValue = []
