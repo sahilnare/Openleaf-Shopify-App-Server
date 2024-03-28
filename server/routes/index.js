@@ -163,10 +163,11 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
     }
 
-    const { rows: shopify_user_rows } = await query('SELECT * FROM shopify_users WHERE store_url = $1', [`https://${shop}/`])
-    if (shopify_user_rows !== 0) {
-      return res.status(200).json({message: 'User already present!'});
-    }
+    // # Getting Error don't know why -> Logical error
+    // const { rows: shopify_user_rows } = await query('SELECT * FROM shopify_users WHERE store_url = $1', [`https://${shop}/`])
+    // if (shopify_user_rows !== 0) {
+    //   return res.status(200).json({message: 'User already present!'});
+    // }
 
     if (await argon2.verify(rows[0].password, password)) {
 
