@@ -79,15 +79,6 @@ const authMiddleware = (app) => {
 
       const { session } = callbackResponse;
 
-      try {
-        const locations = await shopify.rest.Locations.all({
-          session: session
-        })
-        console.log(locations);
-      } catch (error) {
-        console.log(error);
-      }
-
       await sessionHandler.storeSession(session);
       
       // Error may occur here
@@ -153,15 +144,6 @@ const authMiddleware = (app) => {
 
       const { session } = callbackResponse;
       await sessionHandler.storeSession(session);
-
-      try {
-        const locations = await shopify.rest.Locations.all({
-          session: session
-        })
-        console.log(locations);
-      } catch (error) {
-        console.log(error);
-      }
 
       const host = req.query.host;
       const { shop } = session;

@@ -150,8 +150,6 @@ userRoutes.get("/debug/createNewSubscription", async (req, res) => {
 });
 
 userRoutes.get("/login/credentials", async (req, res) => {
-  console.log('req.query in login credentials', req?.query);
-  console.log('query => ', req?.query?.email, req?.query?.password);
   const {email, password, shop, apikey} = req.query;
 
   try {
@@ -162,12 +160,6 @@ userRoutes.get("/login/credentials", async (req, res) => {
       return res.status(401).json({message: 'Invallid Credentials'});
 
     }
-
-    // # Getting Error don't know why -> Logical error
-    // const { rows: shopify_user_rows } = await query('SELECT * FROM shopify_users WHERE store_url = $1', [`https://${shop}/`])
-    // if (shopify_user_rows !== 0) {
-    //   return res.status(200).json({message: 'User already present!'});
-    // }
 
     if (await argon2.verify(rows[0].password, password)) {
 
@@ -182,18 +174,16 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
       const shopify_access_token = rows1[0].shopify_access_token;
 
-      // # Uncomment it afterward. This is for testing purpose.
-      // await query('INSERT INTO shopify_users (user_id, email, shopify_api_key, shipping_mode, shopify_access_token, store_url) VALUES ($1, $2, $3, $4, $5, $6)', [
-      //   user_id,
-      //   email,
-      //   apikey,
-      //   'manual',
-      //   shopify_access_token,
-      //   `https://${shop}/`
-      // ])
+      await query('INSERT INTO shopify_users (user_id, email, shopify_api_key, shipping_mode, shopify_access_token, store_url) VALUES ($1, $2, $3, $4, $5, $6)', [
+        user_id,
+        email,
+        apikey,
+        'manual',
+        shopify_access_token,
+        `https://${shop}/`
+      ])
 
       const url = `https://${shop}/admin/api/2024-01/locations.json`;
-      console.log(shopify_access_token);
       const options = {
         method: 'GET',
         headers: {
@@ -205,11 +195,9 @@ userRoutes.get("/login/credentials", async (req, res) => {
       const response = await fetch(url, options);
 
       const result = await response.json();
-      console.log(result, result?.data, result?.locations);
       const locations = result?.locations;
 
       const { rows: pickup_locations_rows } = await query('SELECT * FROM pickup_locations WHERE user_id = $1', [user_id]);
-      console.log('pickupLocations => ', pickup_locations_rows)
       
       if (pickup_locations_rows.length === 0) {
 
@@ -231,7 +219,6 @@ userRoutes.get("/login/credentials", async (req, res) => {
         startValue += 2
       }
     
-      console.log('Inserting location values', shopify_location_query, insertValue);
       await query(shopify_location_query, insertValue)
 
       return res.status(201).json({message: 'Shopify User successfully created.'})

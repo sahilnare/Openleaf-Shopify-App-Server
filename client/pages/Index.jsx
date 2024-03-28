@@ -17,14 +17,10 @@ const HomePage = () => {
 
   const checkLogin = async (shop_url) => {
     const res = await fetch(`/api/apps/islogin?shop=${shop_url}`);
-    console.log('response login => ', res);
     const result = await res.json();
     if (res.ok) {
-      console.log('user already present');
       setErrorMessage(result.message);
       setIsUserLogin(true);
-    } else {
-      setErrorMessage(result.message);
     }
     setLoader(false);
   }
@@ -32,12 +28,9 @@ const HomePage = () => {
   const fetchData = async () => {
     setLoader(true)
     const res = await fetch(`/api/apps/login/credentials?email=${email}&password=${password}&shop=${shopUrl}&apikey=${apiKey}`);
-    console.log('response: => ', res);
     const result = await res.json();
     if (res.ok) {
-      console.log('login succesfull', result)
       setIsUserLogin(true)
-      // navigate('https://dashboard.openleaf.tech/auth/login')
       setErrorMessage(result.message);
     } else {
       setErrorMessage(result.message);
@@ -47,7 +40,6 @@ const HomePage = () => {
 
   const submitForm = (event) => {
     // event.preventDefault();
-    console.log('result and window.shopify', window?.shopify);
     try {
       fetchData();
     } catch (error) {
@@ -70,7 +62,6 @@ const HomePage = () => {
     if (window?.shopify?.config) {
       setApiKey(window?.shopify?.config?.apiKey)
       setShopUrl(window?.shopify?.config?.shop)
-      console.log('window.shopify => ', window?.shopify)
     }
   }, [window])
 
