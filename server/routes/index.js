@@ -224,7 +224,7 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
       const wareHouseName = pickup_locations_rows[0].warehouse_name;
 
-      await insertShopifyLocation(wareHouseName, locations);
+      await insertShopifyLocation(wareHouseName, locations, user_id);
 
       return res.status(201).json({message: 'Shopify User successfully created.'})
 

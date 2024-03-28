@@ -31,7 +31,7 @@ export const insertShopifyPackaging = async (user_id) => {
 
 }
 
-export const insertShopifyLocation = async (wareHouseName, locations) => {
+export const insertShopifyLocation = async (wareHouseName, locations, user_id) => {
 
     let shopify_location_query = `INSERT INTO shopify_locations (shopify_assigned_location, user_id, pickup_location) VALUES `
     const insertValue = []
