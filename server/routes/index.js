@@ -189,18 +189,32 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
       const webhookId = shopify_user_rows[0].webhook_id;
 
-      shopify.webhooks.addHandlers({
-        ORDERS_CREATE: {
-          deliveryMethod: DeliveryMethod.Http,
-          callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`,
-          callback: openleafOrderCreated
-        },
-        ORDERS_UPDATED: {
-          deliveryMethod: DeliveryMethod.Http,
-          callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/orderUpdate/${webhookId}`,
-          callback: openleafOrderUpdated
-        }
-      })
+      try {
+        shopify.webhooks.addHandlers({
+          ORDERS_CREATE: {
+            deliveryMethod: DeliveryMethod.Http,
+            callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`,
+            callback: openleafOrderCreated
+          },
+          ORDERS_UPDATED: {
+            deliveryMethod: DeliveryMethod.Http,
+            callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/orderUpdate/${webhookId}`,
+            callback: openleafOrderUpdated
+          }
+        })
+      } catch (error) {
+        console.log('Error in setting webhook', error)
+      }
+
+      await query('INSERT INTO shopify_packaging (user_id, package_dimensions) VALUES($1, $2)', [
+        user_id,
+        JSON.stringify({
+          height: 20,
+          length: 4,
+          weight: 300,
+          breadth: 20
+        })
+      ])
 
       const url = `https://${shop}/admin/api/2024-01/locations.json`;
       const options = {
