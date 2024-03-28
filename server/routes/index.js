@@ -255,4 +255,20 @@ userRoutes.get('/islogin', async (req, res) => {
   }
 })
 
+userRoutes.get('/createWebhook', async (req, res) => {
+  console.log('creating webhook');
+  // const { shop } = req?.query;
+
+  try {
+    
+    // const { rows } = await query('SELECT webhook_id FROM shopify_users WHERE store_url = $1', [`https://${shop}/`])
+    // const webhookId = rows[0].webhook_id;
+    return res.status(200).json({message: 'webhook setted'})
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({error, isUser: false})
+
+  }
+})
+
 export default userRoutes;

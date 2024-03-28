@@ -1,7 +1,8 @@
 import { DeliveryMethod, shopifyApi } from "@shopify/shopify-api";
 import "dotenv/config";
 import appUninstallHandler from "../server/webhooks/app_uninstalled.js";
-import orderCreatedHandler from '../server/webhooks/order_created.js';
+// import orderCreatedHandler from "../server/webhooks/order_created.js";
+import openleafOrderCreated from "../server/webhooks/openleaf_order_create.js";
 
 const isDev = process.env.NODE_ENV === "dev";
 
@@ -25,9 +26,14 @@ shopify.webhooks.addHandlers({
   },
   ORDERS_CREATE: {
     deliveryMethod: DeliveryMethod.Http,
-    callbackUrl: "/api/webhooks/order_created",
-    callback: orderCreatedHandler,
-  },
+    callbackUrl: "/api/apps/createWebhook",
+    callback: openleafOrderCreated
+  }
+  // ORDERS_CREATE: {
+  //   deliveryMethod: DeliveryMethod.Http,
+  //   callbackUrl: "/api/webhooks/order_created",
+  //   callback: orderCreatedHandler,
+  // },
 });
 
 export default shopify;
