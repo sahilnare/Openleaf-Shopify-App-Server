@@ -205,7 +205,7 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
       const result = await response.json();
       console.log(result, result?.data);
-      const locations = result?.data?.locations;
+      const locations = result?.locations;
 
       const { rows: pickup_locations_rows } = await query('SELECT * FROM pickup_locations WHERE user_id = $1', [user_id]);
       const wareHouseName = pickup_locations_rows[0].warehouse_name;
