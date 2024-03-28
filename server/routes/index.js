@@ -6,6 +6,7 @@ import shopify from "../../utils/shopify.js";
 import openleafOrderCreated from "../webhooks/openleaf_order_create.js";
 import { DeliveryMethod } from "@shopify/shopify-api";
 import openleafOrderUpdated from "../webhooks/openleaf_order_update.js";
+import { insertShopifyLocation, insertShopifyPackaging, insertShopifyUser } from "./insertHandler.js";
 
 const userRoutes = Router();
 
@@ -178,16 +179,7 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
       const shopify_access_token = rows1[0].shopify_access_token;
 
-      const { rows: shopify_user_rows} = await query('INSERT INTO shopify_users (user_id, email, shopify_api_key, shipping_mode, shopify_access_token, store_url) VALUES ($1, $2, $3, $4, $5, $6) RETURNING webhook_id', [
-        user_id,
-        email,
-        apikey,
-        'manual',
-        shopify_access_token,
-        `https://${shop}/`
-      ])
-
-      const webhookId = shopify_user_rows[0].webhook_id;
+      const webhookId = await insertShopifyUser(user_id, email, apikey, 'manual', shopify_access_token, `https://${shop}`)
 
       try {
         shopify.webhooks.addHandlers({
@@ -206,15 +198,7 @@ userRoutes.get("/login/credentials", async (req, res) => {
         console.log('Error in setting webhook', error)
       }
 
-      await query('INSERT INTO shopify_packaging (user_id, package_dimensions) VALUES($1, $2)', [
-        user_id,
-        JSON.stringify({
-          height: 20,
-          length: 4,
-          weight: 300,
-          breadth: 20
-        })
-      ])
+      await insertShopifyPackaging(user_id);
 
       const url = `https://${shop}/admin/api/2024-01/locations.json`;
       const options = {
@@ -240,19 +224,7 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
       const wareHouseName = pickup_locations_rows[0].warehouse_name;
 
-      let shopify_location_query = `INSERT INTO shopify_locations (shopify_assigned_location, user_id, pickup_location) VALUES `
-      const insertValue = []
-      let startValue = 0;
-      for (let index = 1; index <= locations?.length; index+= 1) {
-        shopify_location_query += `($${index + startValue}, $${index + startValue + 1}, $${index + startValue + 2})`;
-        if (index !== locations.length) {
-          shopify_location_query += ', '
-        }
-        insertValue.push(locations[index-1].name, user_id, wareHouseName)	
-        startValue += 2
-      }
-    
-      await query(shopify_location_query, insertValue)
+      await insertShopifyLocation(wareHouseName, locations);
 
       return res.status(201).json({message: 'Shopify User successfully created.'})
 
@@ -288,20 +260,6 @@ userRoutes.get('/islogin', async (req, res) => {
   }
 })
 
-userRoutes.get('/createWebhook', async (req, res) => {
-  console.log('creating webhook');
-  // const { shop } = req?.query;
 
-  try {
-    
-    // const { rows } = await query('SELECT webhook_id FROM shopify_users WHERE store_url = $1', [`https://${shop}/`])
-    // const webhookId = rows[0].webhook_id;
-    return res.status(200).json({message: 'webhook setted'})
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({error, isUser: false})
-
-  }
-})
 
 export default userRoutes;
