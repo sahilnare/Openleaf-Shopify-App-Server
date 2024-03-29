@@ -14,7 +14,7 @@
 .login-title {
     font-size: 1.5rem;
     font-weight: bold;
-    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
 }
 
 .login-form {
@@ -30,10 +30,10 @@
 
 .card-sync-main {
     width: fit-content;
-    margin-top: 1rem;
+    padding-top: 1rem;
 }
 
 
 .card-sync-btn {
-    margin-top: .5rem;
+    padding-top: .5rem;
 }
