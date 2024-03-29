@@ -274,9 +274,18 @@ userRoutes.get('/syncOrders', async (req, res) => {
     // const url = `${store_url}/admin/oauth/access_scopes.json`
   
     const { rows } = query('SELECT webhook_id, shopify_access_token FROM shopify_users WHERE shop_url = $1', [`https://${shop}/`]);
-    const webhookId = rows[0].webhook_id;
-    const accessToken = rows[0].shopify_access_token;
-    console.log('rows -> ', rows, webhookId, accessToken);
+    console.log('rows -> ', rows);
+
+    try {
+      const webhookId = rows[0].webhook_id;
+      const accessToken = rows[0].shopify_access_token;
+    } catch (error) {
+      console.log(error);
+      const webhookId = '91809bf8-5c0f-47e1-aead-b1b21c16a68b';
+      const accessToken = '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';
+      console.log('setted testing accesstoken and weebhookId', webhookId, accessToken)
+    }
+
   
     const options = {
       method: 'GET',

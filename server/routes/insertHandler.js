@@ -2,18 +2,24 @@ import query from "../../utils/dbConnect.js";
 
 export const insertShopifyUser = async (user_id, email, shopifyApiKey, shippingMode, shopifyAccessToken, shopUrl) => {
 
-    const { rows: shopify_user_rows} = await query('INSERT INTO shopify_users (user_id, email, shopify_api_key, shipping_mode, shopify_access_token, store_url) VALUES ($1, $2, $3, $4, $5, $6) RETURNING webhook_id', [
-        user_id,
-        email,
-        shopifyApiKey,
-        shippingMode,
-        shopifyAccessToken,
-        shopUrl
-      ])
+    try {
+        console.log(user_id, email, shopifyAccessToken, shopifyApiKey, shippingMode, shopUrl);
+        const { rows: shopify_user_rows} = await query('INSERT INTO shopify_users (user_id, email, shopify_api_key, shipping_mode, shopify_access_token, store_url) VALUES ($1, $2, $3, $4, $5, $6) RETURNING webhook_id', [
+            user_id,
+            email,
+            shopifyApiKey,
+            shippingMode,
+            shopifyAccessToken,
+            shopUrl
+        ])    
+        const webhookId = shopify_user_rows[0].webhook_id;
+        console.log('shopify user inserted', shopify_user_rows, webhookId)
+        return webhookId;    
+    } catch (error) {
+        console.log(error)
+    }
 
-    const webhookId = shopify_user_rows[0].webhook_id;
-    console.log('shopify user inserted')
-    return webhookId;
+
 
 }
 
