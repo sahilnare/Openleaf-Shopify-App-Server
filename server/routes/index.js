@@ -180,7 +180,7 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
       const shopify_access_token = rows1[0].shopify_access_token;
 
-      const webhookId = await insertShopifyUser(user_id, email, apikey, 'manual', shopify_access_token, `https://${shop}`)
+      const webhookId = await insertShopifyUser(user_id, email, apikey, 'manual', shopify_access_token, `https://${shop}/`)
 
       // try {
       //   shopify.webhooks.addHandlers({
@@ -273,7 +273,7 @@ userRoutes.get('/syncOrders', async (req, res) => {
   
     // const url = `${store_url}/admin/oauth/access_scopes.json`
   
-    const { rows } = query('SELECT webhook_id, shopify_access_token FROM shopify_users WHERE shop_url = $1', [`https://${shop}/`]);
+    const { rows } = await query('SELECT webhook_id, shopify_access_token FROM shopify_users WHERE shop_url = $1', [`https://${shop}/`]);
     console.log('rows -> ', rows);
 
     try {
@@ -322,7 +322,7 @@ userRoutes.get('/syncOrders', async (req, res) => {
       console.log('order created with weebhookId => ', webhookId, response.ok);
     }));
 
-    return res.status(201).json({message: 'Order created!', bulkOrderRes})
+    return res.status(201).json({message: 'Bulk Order created!', bulkOrderRes})
 
   } catch (error) {
     console.log(error);
