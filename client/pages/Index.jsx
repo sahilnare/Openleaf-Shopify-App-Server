@@ -1,4 +1,4 @@
-import { Form, FormLayout, TextField, Button, Text } from "@shopify/polaris";
+import { Form, FormLayout, TextField, Button, Text, Card } from "@shopify/polaris";
 import { useNavigate } from "raviger";
 import { useEffect, useState, useCallback } from "react";
 import "./index.css";
@@ -38,6 +38,29 @@ const HomePage = () => {
     setLoader(false);
   }
 
+  
+  const syncOrders = async () => {
+    try {
+
+      setLoader(true)
+      const res = await fetch(`/api/apps/syncOrders?shop=${shopUrl}`);
+      const result = await res.json();
+      if (res.ok) {
+        setErrorMessage(result.message);
+      } else {
+        setErrorMessage(result.message);
+      }
+      setLoader(false);
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const submitSync = () => {
+    syncOrders();
+  }
+
   const submitForm = (event) => {
     // event.preventDefault();
     try {
@@ -73,7 +96,15 @@ const HomePage = () => {
 
   if (isUserLogin) {
     return (
-      <Text variant="heading3xl" alignment="center" tone="success">Register Successfully on Openleaf</Text>
+      <>
+        <Text variant="heading3xl" alignment="center" tone="success">Register Successfully on Openleaf</Text>
+        <Card>
+          <Text as="h2" variant="bodyMd">
+            Synchronize all your orders with Openleaf.
+          </Text>
+          <Button primary onClick={submitSync}>Sync</Button>
+        </Card>
+      </>
     )
   }
 

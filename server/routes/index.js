@@ -7,6 +7,7 @@ import openleafOrderCreated from "../webhooks/openleaf_order_create.js";
 import { DeliveryMethod } from "@shopify/shopify-api";
 import openleafOrderUpdated from "../webhooks/openleaf_order_update.js";
 import { insertShopifyLocation, insertShopifyPackaging, insertShopifyUser } from "./insertHandler.js";
+import logger from "../logger.js";
 
 const userRoutes = Router();
 
@@ -181,22 +182,22 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
       const webhookId = await insertShopifyUser(user_id, email, apikey, 'manual', shopify_access_token, `https://${shop}`)
 
-      try {
-        shopify.webhooks.addHandlers({
-          ORDERS_CREATE: {
-            deliveryMethod: DeliveryMethod.Http,
-            callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`,
-            callback: openleafOrderCreated
-          },
-          ORDERS_UPDATED: {
-            deliveryMethod: DeliveryMethod.Http,
-            callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/orderUpdate/${webhookId}`,
-            callback: openleafOrderUpdated
-          }
-        })
-      } catch (error) {
-        console.log('Error in setting webhook', error)
-      }
+      // try {
+      //   shopify.webhooks.addHandlers({
+      //     ORDERS_CREATE: {
+      //       deliveryMethod: DeliveryMethod.Http,
+      //       callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`,
+      //       callback: openleafOrderCreated
+      //     },
+      //     ORDERS_UPDATED: {
+      //       deliveryMethod: DeliveryMethod.Http,
+      //       callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/orderUpdate/${webhookId}`,
+      //       callback: openleafOrderUpdated
+      //     }
+      //   })
+      // } catch (error) {
+      //   console.log('Error in setting webhook', error)
+      // }
 
       await insertShopifyPackaging(user_id);
 
@@ -260,6 +261,66 @@ userRoutes.get('/islogin', async (req, res) => {
   }
 })
 
+userRoutes.get('/syncOrders', async (req, res) => {
+  console.log('syncing orders => ', req?.query);
+
+  const { shop } = req?.query;
+
+  try {
+    
+    const url = `https://${shop}admin/api/2024-01/orders.json?status=any`
+    // const accessToken = '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';
+  
+    // const url = `${store_url}/admin/oauth/access_scopes.json`
+  
+    const { rows } = query('SELECT webhook_id, shopify_access_token FROM shopify_users WHERE shop_url = $1', [`https://${shop}/`]);
+    const webhookId = rows[0].webhook_id;
+    const accessToken = rows[0].shopify_access_token;
+    console.log('rows -> ', rows, webhookId, accessToken);
+  
+    const options = {
+      method: 'GET',
+      headers: {
+        'X-Shopify-Access-Token': `${accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    };
+  
+    const response = await fetch(url, options);
+    const result = await response.json();
+    console.log('result => ', result);
+    logger.info({'shopifyOrders': {
+        orders: result?.orders
+    }});
+  
+    const ordersArray = result?.orders;
+  
+    const bulkOrderRes = await Promise.all(ordersArray.map(async (order, order_index) => {
+  
+      const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`;
+  
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(order)
+      };
+  
+      const response = await fetch(url, options);
+  
+      const result = await response.json();
+      console.log('order created with weebhookId => ', webhookId, response.ok);
+    }));
+
+    return res.status(201).json({message: 'Order created!', bulkOrderRes})
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({message: "Server error", error});
+  }
+
+})
 
 
 export default userRoutes;

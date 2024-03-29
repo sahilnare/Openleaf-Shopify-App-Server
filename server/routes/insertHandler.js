@@ -12,7 +12,7 @@ export const insertShopifyUser = async (user_id, email, shopifyApiKey, shippingM
       ])
 
     const webhookId = shopify_user_rows[0].webhook_id;
-
+    console.log('shopify user inserted')
     return webhookId;
 
 }
@@ -28,6 +28,8 @@ export const insertShopifyPackaging = async (user_id) => {
           breadth: 20
         })
     ])
+
+    console.log('packacking innserted')
 
 }
 
@@ -46,5 +48,7 @@ export const insertShopifyLocation = async (wareHouseName, locations, user_id) =
     }
     
     await query(shopify_location_query, insertValue);
+
+    console.log('location inserted!')
 
 }
