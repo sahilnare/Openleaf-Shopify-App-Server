@@ -102,7 +102,9 @@ const HomePage = () => {
           <Text as="h2" variant="headingMd">
             Synchronize all your orders with Openleaf.
           </Text>
-          <Button className='card-sync-btn' primary onClick={submitSync}>Sync</Button>
+          <div className='card-sync-btn'>
+            <Button primary onClick={submitSync}>Sync</Button>
+          </div>
         </Card>
       </div>
     )
