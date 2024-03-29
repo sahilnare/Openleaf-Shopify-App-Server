@@ -265,36 +265,32 @@ userRoutes.get('/syncOrders', async (req, res) => {
   console.log('syncing orders => ', req?.query);
 
   const { shop } = req?.query;
+    
+  const url = `https://${shop}admin/api/2024-01/orders.json?status=any`
+  // const accessToken = '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';
+
+  // const url = `${store_url}/admin/oauth/access_scopes.json`
+
+  const { rows } = await query('SELECT webhook_id, shopify_access_token FROM shopify_users WHERE store_url = $1', [`https://${shop}/`]);
+  console.log('rows -> ', rows);
+
+  if (rows.length === 0) {
+    return res.status(400).json({message: "User not present", isUser: false})
+  }
+  const webhookId = rows[0].webhook_id;
+  const accessToken = rows[0].shopify_access_token;
+
+
+
+  const options = {
+    method: 'GET',
+    headers: {
+      'X-Shopify-Access-Token': `${accessToken}`,
+      'Content-Type': 'application/json'
+    }
+  };
 
   try {
-    
-    const url = `https://${shop}admin/api/2024-01/orders.json?status=any`
-    // const accessToken = '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';
-  
-    // const url = `${store_url}/admin/oauth/access_scopes.json`
-  
-    const { rows } = await query('SELECT webhook_id, shopify_access_token FROM shopify_users WHERE shop_url = $1', [`https://${shop}/`]);
-    console.log('rows -> ', rows);
-
-    try {
-      const webhookId = rows[0].webhook_id;
-      const accessToken = rows[0].shopify_access_token;
-    } catch (error) {
-      console.log(error);
-      const webhookId = '91809bf8-5c0f-47e1-aead-b1b21c16a68b';
-      const accessToken = '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';
-      console.log('setted testing accesstoken and weebhookId', webhookId, accessToken)
-    }
-
-  
-    const options = {
-      method: 'GET',
-      headers: {
-        'X-Shopify-Access-Token': `${accessToken}`,
-        'Content-Type': 'application/json'
-      }
-    };
-  
     const response = await fetch(url, options);
     const result = await response.json();
     console.log('result => ', result);
@@ -323,10 +319,8 @@ userRoutes.get('/syncOrders', async (req, res) => {
     }));
 
     return res.status(201).json({message: 'Bulk Order created!', bulkOrderRes})
-
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({message: "Server error", error});
+    return res.status(500).json({message: "Server Error", error})
   }
 
 })

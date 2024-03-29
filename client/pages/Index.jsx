@@ -96,15 +96,15 @@ const HomePage = () => {
 
   if (isUserLogin) {
     return (
-      <>
-        <Text variant="heading3xl" alignment="center" tone="success">Register Successfully on Openleaf</Text>
-        <Card>
-          <Text as="h2" variant="bodyMd">
+      <div className="card-sync">
+        <Text variant="heading2xl" alignment="center" tone="base">Register Successfully on Openleaf</Text>
+        <Card className='card-sync-main'>
+          <Text as="h2" variant="headingLg">
             Synchronize all your orders with Openleaf.
           </Text>
-          <Button primary onClick={submitSync}>Sync</Button>
+          <Button className='card-sync-btn' primary onClick={submitSync}>Sync</Button>
         </Card>
-      </>
+      </div>
     )
   }
 

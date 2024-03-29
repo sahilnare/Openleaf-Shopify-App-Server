@@ -20,3 +20,18 @@
 .login-form {
     margin: "50px";
 }
+
+.card-sync {
+    padding: 4rem 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.card-sync-main {
+    width: fit-content;
+
+}
+
+.card-sync-btn {
+    margin-top: 5px;
+}
