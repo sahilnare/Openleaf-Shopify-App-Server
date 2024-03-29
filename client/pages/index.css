@@ -30,9 +30,10 @@
 
 .card-sync-main {
     width: fit-content;
-    margin-top: 15px;
+    margin-top: 1rem;
 }
 
+
 .card-sync-btn {
-    margin-top: 8px;
+    margin-top: .5rem;
 }

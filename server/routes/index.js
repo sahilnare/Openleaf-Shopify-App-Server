@@ -299,28 +299,37 @@ userRoutes.get('/syncOrders', async (req, res) => {
     }});
   
     const ordersArray = result?.orders;
-  
-    const bulkOrderRes = await Promise.all(ordersArray.map(async (order, order_index) => {
-  
-      const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`;
-  
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(order)
-      };
-  
-      const response = await fetch(url, options);
-  
-      const result = await response.json();
-      console.log('order created with weebhookId => ', webhookId, response.ok);
-    }));
 
-    return res.status(201).json({message: 'Bulk Order created!', bulkOrderRes})
+    try {
+      
+      const bulkOrderRes = await Promise.all(ordersArray.map(async (order, order_index) => {
+  
+        const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`;
+    
+        const options = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(order)
+        };
+    
+        const response = await fetch(url, options);
+    
+        const result = await response.json();
+        console.log('order created with weebhookId => ', webhookId, response.ok);
+      }));
+  
+      return res.status(201).json({message: 'Bulk Order created!', bulkOrderRes})
+
+    } catch (error) {
+
+      return res.status(500).json({message: "Server Error", error})
+      
+    }  
+
   } catch (error) {
-    return res.status(500).json({message: "Server Error", error})
+    return res.status(500).json({message: "Shopify Server Error", error})
   }
 
 })
