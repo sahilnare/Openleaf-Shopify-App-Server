@@ -266,7 +266,7 @@ userRoutes.get('/syncOrders', async (req, res) => {
 
   const { shop } = req?.query;
     
-  const url = `https://${shop}admin/api/2024-01/orders.json?status=any`
+  const url = `https://${shop}/admin/api/2024-01/orders.json?status=any`
   // const accessToken = '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';
 
   // const url = `${store_url}/admin/oauth/access_scopes.json`

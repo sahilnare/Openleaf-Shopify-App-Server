@@ -24,14 +24,15 @@
 .card-sync {
     padding: 4rem 2rem;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
 .card-sync-main {
     width: fit-content;
-
+    margin-top: 15px;
 }
 
 .card-sync-btn {
-    margin-top: 5px;
+    margin-top: 8px;
 }
