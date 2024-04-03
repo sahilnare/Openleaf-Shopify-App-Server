@@ -4,6 +4,7 @@ import {
   InvalidOAuthError,
   InvalidSession,
   shopifyApi,
+  RequestedTokenType
 } from "@shopify/shopify-api";
 import StoreModel from "../../utils/models/StoreModel.js";
 import sessionHandler from "../../utils/sessionHandler.js";
@@ -21,7 +22,6 @@ const authMiddleware = (app) => {
 
 	  console.log(req.query.shop);
 	  console.log(req.query);
-	  console.log(req.body);
 
     try {
       const authResponseTemp = await shopify.auth.begin({
@@ -93,9 +93,42 @@ const authMiddleware = (app) => {
 
       const { session } = callbackResponse;
 
+    try {
+      
+      const shop = shopify.utils.sanitizeShop(session.shop, true)
+      // const headerSessionToken = getSessionTokenHeader(request);
+      // const searchParamSessionToken = getSessionTokenFromUrlParam(request);
+      // const sessionToken = (headerSessionToken || searchParamSessionToken);
+      const sessionToken = session.accessToken;
+
+      const tknExchange = await shopify.auth.tokenExchange({
+        sessionToken,
+        shop,
+        requestedTokenType: RequestedTokenType.OfflineAccessToken
+      });
+
+      console.log('token exchange => ',tknExchange)
+
+    } catch (error) {
+      console.log('token exchange error => ', error)
+    }
+      
+    try {
+      const authResponseTemp = await shopify.auth.begin({
+        shop: session.shop,
+        callbackPath: '/api/auth/tokens',
+        isOnline: false,
+        rawRequest: req,
+        rawResponse: res
+      })
+  
+      console.log('authResponse => ', authResponseTemp)
+    } catch (error) {
+      console.log('Begin error', error);
+    }
+
       await sessionHandler.storeSession(session);
       
-      // Error may occur here
       try {
         const {rows} = await query('SELECT * FROM shopify_saved_tokens WHERE store_url = $1', [`https://${session.shop}/`])
         if (rows.length === 0) {
