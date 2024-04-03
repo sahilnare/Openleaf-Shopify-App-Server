@@ -23,6 +23,20 @@ const authMiddleware = (app) => {
 	  console.log(req.query);
 	  console.log(req.body);
 
+    try {
+      const authResponseTemp = await shopify.auth.begin({
+        shop: req.query.shop,
+        callbackPath: '/api/auth/tokens',
+        isOnline: false,
+        rawRequest: req,
+        rawResponse: res
+      })
+  
+      console.log('authResponse => ', authResponseTemp)
+    } catch (error) {
+      console.log(error);
+    }
+
       if (req.query.embedded === "1") {
         const shop = shopify.utils.sanitizeShop(req.query.shop);
 		console.log("Sanitized shop");
