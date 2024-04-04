@@ -39,7 +39,7 @@ const authMiddleware = (app) => {
     }
 
     // * Experimental => Getting data using Rest Api => /admin/oauth/authorize
-    const oAuthUrl = `https://${session.shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${'/api/auth/callback'}`
+    const oAuthUrl = `https://${req.query.shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${'/api/auth/callback'}`
     const response = await fetch(oAuthUrl)
     const result = await response.json()
     console.log('Getting data using /admin/oauth/authorize => ', result);
@@ -155,8 +155,6 @@ const authMiddleware = (app) => {
         console.log('Begin error', error);
       }
 
-      // * Experimental => Getting access token using REST Api => /admin/oauth/access_token
-      
 
       await sessionHandler.storeSession(session);
       
