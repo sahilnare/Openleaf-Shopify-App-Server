@@ -12,6 +12,7 @@ import shopify from "../../utils/shopify.js";
 // import query from "../../utils/dbConnect.js";
 
 const authMiddleware = (app) => {
+
   app.get("/api/auth", async (req, res) => {
     try {
       if (!req.query.shop) {
@@ -22,16 +23,7 @@ const authMiddleware = (app) => {
 
 	  console.log(req.query.shop);
 	  console.log(req.query);
-
-    // * Experimental => Getting data using Rest Api => /admin/oauth/authorize
-    try {
-      const oAuthUrl = `https://${req.query.shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${'https://shopifyapp.openleaf.tech/api/auth/callback'}`
-      const response = await fetch(oAuthUrl)
-      const result = await response.json()
-      console.log('Getting data using /admin/oauth/authorize => ', result);
-    } catch (error) {
-      console.log('Rest api error => /admin/oauth/authorize => ', error);
-    }
+	  console.log(req.body);
 
       if (req.query.embedded === "1") {
         const shop = shopify.utils.sanitizeShop(req.query.shop);
@@ -45,8 +37,6 @@ const authMiddleware = (app) => {
 
         return res.redirect(`/exitframe?${queryParams}`);
       }
-    
-    console.log('working in hrere')
 
 	  const authResponse = await shopify.auth.begin({
         shop: req.query.shop,
@@ -118,7 +108,7 @@ const authMiddleware = (app) => {
         // const searchParamSessionToken = getSessionTokenFromUrlParam(request);
         // const sessionToken = (headerSessionToken || searchParamSessionToken);
         const sessionToken = session.accessToken;
-
+        
         const tknExchange = await shopify.auth.tokenExchange({
           sessionToken,
           shop,
@@ -150,15 +140,15 @@ const authMiddleware = (app) => {
       await sessionHandler.storeSession(session);
       
       // try {
-      //   const {rows} = await query('SELECT * FROM shopify_saved_tokens WHERE store_url = $1', [`https://${session.shop}/`])
+        //   const {rows} = await query('SELECT * FROM shopify_saved_tokens WHERE store_url = $1', [`https://${session.shop}/`])
       //   if (rows.length === 0) {
 
       //     await query('INSERT INTO shopify_saved_tokens (shopify_access_token, store_url) VALUES ($1, $2);', [session.accessToken, `https://${session.shop}/`]);
 
       //   } else if (session.accessToken !== rows[0].shopify_access_token) {
-
+        
       //     await query('UPDATE shopify_saved_tokens SET shopify_access_token = $1 WHERE store_url = $2', [session.accessToken, `https://${session.shop}/`])
-
+      
       //   }
         
       // } catch (error) {
@@ -186,7 +176,7 @@ const authMiddleware = (app) => {
       const { shop } = req.query;
       switch (true) {
         case e instanceof CookieNotFound:
-        case e instanceof InvalidOAuthError:
+          case e instanceof InvalidOAuthError:
         case e instanceof InvalidSession:
           res.redirect(`/api/auth?shop=${shop}`);
           break;
@@ -244,3 +234,12 @@ const authMiddleware = (app) => {
 };
 
 export default authMiddleware;
+
+// * Experimental => Getting data using Rest Api => /admin/oauth/authorize
+// try {
+//   const oAuthUrl = `https://${req.query.shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${'https://shopifyapp.openleaf.tech/api/auth/callback'}`
+//   const response = await fetch(oAuthUrl)
+//   console.log('Getting data using /admin/oauth/authorize => ', response);
+// } catch (error) {
+//   console.log('Rest api error => /admin/oauth/authorize => ', error);
+// }
