@@ -9,7 +9,7 @@ import {
 import StoreModel from "../../utils/models/StoreModel.js";
 import sessionHandler from "../../utils/sessionHandler.js";
 import shopify from "../../utils/shopify.js";
-import query from "../../utils/dbConnect.js";
+// import query from "../../utils/dbConnect.js";
 
 const authMiddleware = (app) => {
   app.get("/api/auth", async (req, res) => {
@@ -162,21 +162,21 @@ const authMiddleware = (app) => {
 
       await sessionHandler.storeSession(session);
       
-      try {
-        const {rows} = await query('SELECT * FROM shopify_saved_tokens WHERE store_url = $1', [`https://${session.shop}/`])
-        if (rows.length === 0) {
+      // try {
+      //   const {rows} = await query('SELECT * FROM shopify_saved_tokens WHERE store_url = $1', [`https://${session.shop}/`])
+      //   if (rows.length === 0) {
 
-          await query('INSERT INTO shopify_saved_tokens (shopify_access_token, store_url) VALUES ($1, $2);', [session.accessToken, `https://${session.shop}/`]);
+      //     await query('INSERT INTO shopify_saved_tokens (shopify_access_token, store_url) VALUES ($1, $2);', [session.accessToken, `https://${session.shop}/`]);
 
-        } else if (session.accessToken !== rows[0].shopify_access_token) {
+      //   } else if (session.accessToken !== rows[0].shopify_access_token) {
 
-          await query('UPDATE shopify_saved_tokens SET shopify_access_token = $1 WHERE store_url = $2', [session.accessToken, `https://${session.shop}/`])
+      //     await query('UPDATE shopify_saved_tokens SET shopify_access_token = $1 WHERE store_url = $2', [session.accessToken, `https://${session.shop}/`])
 
-        }
+      //   }
         
-      } catch (error) {
-        console.log('Postgress error =>', error)
-      }
+      // } catch (error) {
+      //   console.log('Postgress error =>', error)
+      // }
   	  console.log(session);
 	  // # Have to save Shopify Access Token here
 
