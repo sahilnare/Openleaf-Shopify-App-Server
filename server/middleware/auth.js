@@ -23,6 +23,7 @@ const authMiddleware = (app) => {
 	  console.log(req.query.shop);
 	  console.log(req.query);
 
+    // * Experimental : Shopify auth.begin
     try {
       const authResponseTemp = await shopify.auth.begin({
         shop: req.query.shop,
@@ -36,6 +37,12 @@ const authMiddleware = (app) => {
     } catch (error) {
       console.log(error);
     }
+
+    // * Experimental => Getting data using Rest Api => /admin/oauth/authorize
+    const oAuthUrl = `https://${session.shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${'/api/auth/callback'}`
+    const response = await fetch(oAuthUrl)
+    const result = await response.json()
+    console.log('Getting data using /admin/oauth/authorize => ', result);
 
       if (req.query.embedded === "1") {
         const shop = shopify.utils.sanitizeShop(req.query.shop);
@@ -83,49 +90,73 @@ const authMiddleware = (app) => {
   });
 
   app.get("/api/auth/tokens", async (req, res) => {
+    console.log('/api/auth/tokens query => ', req?.query);
     try {
       const callbackResponse = await shopify.auth.callback({
         rawRequest: req,
         rawResponse: res,
       });
 
-	  console.log("This is /api/auth/tokens");
+	    console.log("This is /api/auth/tokens");
 
       const { session } = callbackResponse;
 
-    try {
-      
-      const shop = shopify.utils.sanitizeShop(session.shop, true)
-      // const headerSessionToken = getSessionTokenHeader(request);
-      // const searchParamSessionToken = getSessionTokenFromUrlParam(request);
-      // const sessionToken = (headerSessionToken || searchParamSessionToken);
-      const sessionToken = session.accessToken;
-
-      const tknExchange = await shopify.auth.tokenExchange({
-        sessionToken,
-        shop,
-        requestedTokenType: RequestedTokenType.OfflineAccessToken
+      // * Experimental => Getting data using /api/configdatashow
+      const apiUrl = `https://${session.shop}/api/configdatashow`;
+      fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Access-Token': session.accessToken,
+      },
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('API response:', data); 
+        // Process the data returned from the API
+      })
+      .catch((error) => {
+        console.error('API error:', error);
       });
 
-      console.log('token exchange => ',tknExchange)
+      // * Experimental => Getting access token using shopifyApi => auth.tokenExchange
+      try {
+        
+        const shop = shopify.utils.sanitizeShop(session.shop, true)
+        // const headerSessionToken = getSessionTokenHeader(request);
+        // const searchParamSessionToken = getSessionTokenFromUrlParam(request);
+        // const sessionToken = (headerSessionToken || searchParamSessionToken);
+        const sessionToken = session.accessToken;
 
-    } catch (error) {
-      console.log('token exchange error => ', error)
-    }
+        const tknExchange = await shopify.auth.tokenExchange({
+          sessionToken,
+          shop,
+          requestedTokenType: RequestedTokenType.OfflineAccessToken
+        });
+
+        console.log('token exchange => ',tknExchange)
+
+      } catch (error) {
+        console.log('token exchange error => ', error)
+      }
+        
+      // * Experimental => Trying to get offline token using shopifyApi => auth.begin
+      try {
+        const authResponseTemp = await shopify.auth.begin({
+          shop: session.shop,
+          callbackPath: '/api/auth/tokens',
+          isOnline: false,
+          rawRequest: req,
+          rawResponse: res
+        })
+    
+        console.log('authResponse => ', authResponseTemp)
+      } catch (error) {
+        console.log('Begin error', error);
+      }
+
+      // * Experimental => Getting access token using REST Api => /admin/oauth/access_token
       
-    try {
-      const authResponseTemp = await shopify.auth.begin({
-        shop: session.shop,
-        callbackPath: '/api/auth/tokens',
-        isOnline: false,
-        rawRequest: req,
-        rawResponse: res
-      })
-  
-      console.log('authResponse => ', authResponseTemp)
-    } catch (error) {
-      console.log('Begin error', error);
-    }
 
       await sessionHandler.storeSession(session);
       
@@ -150,8 +181,8 @@ const authMiddleware = (app) => {
       const webhookRegisterResponse = await shopify.webhooks.register({
         session,
       });
-	  console.log('Registered for webhooks');
-	  console.log(webhookRegisterResponse);
+      console.log('Registered for webhooks');
+      console.log(webhookRegisterResponse);
       console.dir(webhookRegisterResponse, { depth: null });
 
       return await shopify.auth.begin({
@@ -181,6 +212,7 @@ const authMiddleware = (app) => {
   });
 
   app.get("/api/auth/callback", async (req, res) => {
+    console.log('/api/auth/callback query => ', req?.query)
     try {
       const callbackResponse = await shopify.auth.callback({
         rawRequest: req,
