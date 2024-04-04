@@ -17,36 +17,47 @@ const authMiddleware = (app) => {
       if (!req.query.shop) {
         return res.status(500).send("No shop provided");
       }
-  
-      console.log("This is /api/auth");
-  
-      console.log(req.query.shop);
-      console.log(req.query);
-      console.log(req.body);
-  
-        if (req.query.embedded === "1") {
-          const shop = shopify.utils.sanitizeShop(req.query.shop);
-      console.log("Sanitized shop");
-      console.log(shop);
-          const queryParams = new URLSearchParams({
-            ...req.query,
-            shop,
-            redirectUri: `https://${shopify.config.hostName}/api/auth?shop=${shop}`,
-          }).toString();
-  
-          return res.redirect(`/exitframe?${queryParams}`);
-        }
-  
-      const authResponse = await shopify.auth.begin({
-          shop: req.query.shop,
-          callbackPath: "/api/auth/tokens",
-          isOnline: false,
-          rawRequest: req,
-          rawResponse: res,
-        });
-  
-      console.log(authResponse);
-  
+
+	  console.log("This is /api/auth");
+
+	  console.log(req.query.shop);
+	  console.log(req.query);
+
+    // * Experimental => Getting data using Rest Api => /admin/oauth/authorize
+    try {
+      const oAuthUrl = `https://${req.query.shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${'https://shopifyapp.openleaf.tech/api/auth/callback'}`
+      const response = await fetch(oAuthUrl)
+      const result = await response.json()
+      console.log('Getting data using /admin/oauth/authorize => ', result);
+    } catch (error) {
+      console.log('Rest api error => /admin/oauth/authorize => ', error);
+    }
+
+      if (req.query.embedded === "1") {
+        const shop = shopify.utils.sanitizeShop(req.query.shop);
+		console.log("Sanitized shop");
+		console.log(shop);
+        const queryParams = new URLSearchParams({
+          ...req.query,
+          shop,
+          redirectUri: `https://${shopify.config.hostName}/api/auth?shop=${shop}`,
+        }).toString();
+
+        return res.redirect(`/exitframe?${queryParams}`);
+      }
+    
+    console.log('working in hrere')
+
+	  const authResponse = await shopify.auth.begin({
+        shop: req.query.shop,
+        callbackPath: "/api/auth/tokens",
+        isOnline: false,
+        rawRequest: req,
+        rawResponse: res,
+      });
+
+	  console.log(authResponse);
+
       return authResponse;
 
     } catch (e) {
