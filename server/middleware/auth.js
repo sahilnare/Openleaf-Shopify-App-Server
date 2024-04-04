@@ -23,21 +23,6 @@ const authMiddleware = (app) => {
 	  console.log(req.query.shop);
 	  console.log(req.query);
 
-    // * Experimental : Shopify auth.begin
-    try {
-      const authResponseTemp = await shopify.auth.begin({
-        shop: req.query.shop,
-        callbackPath: '/api/auth/tokens',
-        isOnline: false,
-        rawRequest: req,
-        rawResponse: res
-      })
-  
-      console.log('authResponseTemp => ', authResponseTemp)
-    } catch (error) {
-      console.log(error);
-    }
-
     // * Experimental => Getting data using Rest Api => /admin/oauth/authorize
     // try {
     //   const oAuthUrl = `https://${req.query.shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${'/api/auth/callback'}`
