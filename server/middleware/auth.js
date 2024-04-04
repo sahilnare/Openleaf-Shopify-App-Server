@@ -33,16 +33,20 @@ const authMiddleware = (app) => {
         rawResponse: res
       })
   
-      console.log('authResponse => ', authResponseTemp)
+      console.log('authResponseTemp => ', authResponseTemp)
     } catch (error) {
       console.log(error);
     }
 
     // * Experimental => Getting data using Rest Api => /admin/oauth/authorize
-    const oAuthUrl = `https://${req.query.shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${'/api/auth/callback'}`
-    const response = await fetch(oAuthUrl)
-    const result = await response.json()
-    console.log('Getting data using /admin/oauth/authorize => ', result);
+    try {
+      const oAuthUrl = `https://${req.query.shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${'/api/auth/callback'}`
+      const response = await fetch(oAuthUrl)
+      const result = await response.json()
+      console.log('Getting data using /admin/oauth/authorize => ', result);
+    } catch (error) {
+      console.log('Rest api error => /admin/oauth/authorize => ', error);
+    }
 
       if (req.query.embedded === "1") {
         const shop = shopify.utils.sanitizeShop(req.query.shop);
