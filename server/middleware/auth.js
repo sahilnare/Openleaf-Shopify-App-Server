@@ -9,6 +9,7 @@ import {
 import StoreModel from "../../utils/models/StoreModel.js";
 import sessionHandler from "../../utils/sessionHandler.js";
 import shopify from "../../utils/shopify.js";
+import { crypto } from "@shopify/shopify-api/runtime";
 // import query from "../../utils/dbConnect.js";
 
 function getSessionTokenHeader(request) {
@@ -136,15 +137,45 @@ const authMiddleware = (app) => {
       const code = req.query.code;
       console.log('api key ', process.env.SHOPIFY_API_KEY, process.env.SHOPIFY_API_SECRET);
       try {
-        const accessTokenRequestUrl = 'https://' + req.query.shop + '/admin/oauth/access_token';
-        const accessTokenPayload = {
-          client_id: process.env.SHOPIFY_API_KEY,
-          client_secret: process.env.SHOPIFY_API_SECRET,
+        const { query } = request;
+        const { code, hmac, shop } = query;
+
+        const map = JSON.parse(JSON.stringify(query));
+        delete map['signature'];
+        delete map['hmac'];
+
+        const message = querystring.stringify(map);
+        const generated_hash = crypto
+          .createHmac('sha256', secret)
+          .update(message)
+          .digest('hex');
+
+        if (generated_hash !== hmac) {
+          return response.status(400).send('HMAC validation failed');
+        }
+
+        if (shop == null) {
+          return response.status(400).send('Expected a shop query parameter');
+        }
+
+        const requestBody = querystring.stringify({
           code,
-        };
-        const response = await fetch(accessTokenRequestUrl, JSON.stringify(accessTokenPayload));
-        const result = await response.json();
-        console.log('result => ', result);
+          client_id: apiKey,
+          client_secret: secret,
+        });
+
+        const remoteResponse = await fetch(`https://${shop}/admin/oauth/access_token`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': Buffer.byteLength(requestBody),
+          },
+          body: requestBody,
+        });
+
+        const responseBody = await remoteResponse.json();
+        const accessToken = responseBody.access_token;
+        console.log('AccessToken', accessToken);
       } catch (error) {
         console.log('Rest api error =>', error)
       }
