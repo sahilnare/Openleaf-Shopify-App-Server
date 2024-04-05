@@ -83,53 +83,53 @@ const authMiddleware = (app) => {
       const { session } = callbackResponse;
 
       // * Experimental => Getting access token using shopifyApi => auth.tokenExchange
-      // try {
+      try {
         
-      //   const shop = shopify.utils.sanitizeShop(session.shop, true)
-      //   // const headerSessionToken = getSessionTokenHeader(request);
-      //   // const searchParamSessionToken = getSessionTokenFromUrlParam(request);
-      //   // const sessionToken = (headerSessionToken || searchParamSessionToken);
-      //   const sessionToken = session.accessToken;
+        const shop = shopify.utils.sanitizeShop(session.shop, true)
+        // const headerSessionToken = getSessionTokenHeader(request);
+        // const searchParamSessionToken = getSessionTokenFromUrlParam(request);
+        // const sessionToken = (headerSessionToken || searchParamSessionToken);
+        const sessionToken = session.accessToken;
         
-      //   const tknExchange = await shopify.auth.tokenExchange({
-      //     sessionToken,
-      //     shop,
-      //     requestedTokenType: RequestedTokenType.OfflineAccessToken
-      //   });
+        const tknExchange = await shopify.auth.tokenExchange({
+          sessionToken,
+          shop,
+          requestedTokenType: RequestedTokenType.OfflineAccessToken
+        });
 
-      //   console.log('token exchange => ',tknExchange)
+        console.log('token exchange => ',tknExchange)
 
-      // } catch (error) {
-      //   console.log('token exchange error => ', error)
-      // }
+      } catch (error) {
+        console.log('token exchange error => ', error)
+      }
 
 
       // * Experimental => Token exchange from Rest API => https://{shop}.myshopify.com/admin/oauth/access_token
-      try {
-        const tknExchangeUrl = `https://${req.query.shop}/admin/oauth/access_token`;
+      // try {
+      //   const tknExchangeUrl = `https://${req.query.shop}/admin/oauth/access_token`;
         
-        const jwtToken = await shopify.session.decodeSessionToken(session.accessToken);
-        console.log('jwtToken', jwtToken)
-        const response = await fetch(tknExchangeUrl, {
-          method: "POST",
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            client_id: process.env.SHOPIFY_API_KEY,
-            client_secret: process.env.SHOPIFY_API_SECRET,
-            grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
-            subject_token: jwtToken,
-            subject_token_type: "urn:ietf:params:oauth:token-type:id_token",
-            requested_token_type: "urn:shopify:params:oauth:token-type:offline-access-token"
-          })
-        })
-        const result = await response.json();
-        console.log('Token exchange Rest API result => ', result);
-      } catch (error) {
-        console.log('Token exchange Rest API error => ', error)
-      }
+      //   const jwtToken = await shopify.session.decodeSessionToken(session.accessToken);
+      //   console.log('jwtToken', jwtToken)
+      //   const response = await fetch(tknExchangeUrl, {
+      //     method: "POST",
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //       'Accept': 'application/json'
+      //     },
+      //     body: JSON.stringify({
+      //       client_id: process.env.SHOPIFY_API_KEY,
+      //       client_secret: process.env.SHOPIFY_API_SECRET,
+      //       grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
+      //       subject_token: jwtToken,
+      //       subject_token_type: "urn:ietf:params:oauth:token-type:id_token",
+      //       requested_token_type: "urn:shopify:params:oauth:token-type:offline-access-token"
+      //     })
+      //   })
+      //   const result = await response.json();
+      //   console.log('Token exchange Rest API result => ', result);
+      // } catch (error) {
+      //   console.log('Token exchange Rest API error => ', error)
+      // }
 
       await sessionHandler.storeSession(session);
       
