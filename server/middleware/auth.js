@@ -80,8 +80,7 @@ const authMiddleware = (app) => {
 
 	    console.log("This is /api/auth/tokens");
 
-      const { session, headers } = callbackResponse;
-      console.log('headers => ', headers);
+      const { session } = callbackResponse;
 
       // * Experimental => Getting access token using shopifyApi => auth.tokenExchange
       // try {
@@ -90,7 +89,7 @@ const authMiddleware = (app) => {
       //   // const headerSessionToken = getSessionTokenHeader(request);
       //   // const searchParamSessionToken = getSessionTokenFromUrlParam(request);
       //   // const sessionToken = (headerSessionToken || searchParamSessionToken);
-      //   const sessionToken = req?.query.code;
+      //   const sessionToken = session.accessToken;
         
       //   const tknExchange = await shopify.auth.tokenExchange({
       //     sessionToken,
@@ -108,7 +107,9 @@ const authMiddleware = (app) => {
       // * Experimental => Token exchange from Rest API => https://{shop}.myshopify.com/admin/oauth/access_token
       try {
         const tknExchangeUrl = `https://${req.query.shop}/admin/oauth/access_token`;
-
+        
+        const jwtToken = await shopify.session.decodeSessionToken(session.accessToken);
+        console.log('jwtToken', jwtToken)
         const response = await fetch(tknExchangeUrl, {
           method: "POST",
           headers: {
@@ -119,7 +120,7 @@ const authMiddleware = (app) => {
             client_id: process.env.SHOPIFY_API_KEY,
             client_secret: process.env.SHOPIFY_API_SECRET,
             grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
-            subject_token: session.accessToken,
+            subject_token: jwtToken,
             subject_token_type: "urn:ietf:params:oauth:token-type:id_token",
             requested_token_type: "urn:shopify:params:oauth:token-type:offline-access-token"
           })
