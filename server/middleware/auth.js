@@ -104,6 +104,8 @@ const authMiddleware = (app) => {
         // console.log('sessionTk', sessionToken)
 
         const encodedSessionToken = getSessionTokenHeader(req) || getSessionTokenFromUrlParam(req);
+
+        console.log(encodedSessionToken);
         
         const tknExchange = await shopify.auth.tokenExchange({
           sessionToken: encodedSessionToken,
