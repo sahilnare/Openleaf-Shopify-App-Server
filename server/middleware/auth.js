@@ -147,7 +147,7 @@ const authMiddleware = (app) => {
 
         const message = querystring.stringify(map);
         const generated_hash = crypto
-          .createHmac('sha256', secret)
+          .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
           .update(message)
           .digest('hex');
 
@@ -161,8 +161,8 @@ const authMiddleware = (app) => {
 
         const requestBody = querystring.stringify({
           code,
-          client_id: apiKey,
-          client_secret: secret,
+          client_id: process.env.SHOPIFY_API_KEY,
+          client_secret: process.env.SHOPIFY_API_SECRET,
         });
 
         const remoteResponse = await fetch(`https://${shop}/admin/oauth/access_token`, {
