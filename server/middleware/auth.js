@@ -122,10 +122,8 @@ const authMiddleware = (app) => {
 
       // * Experimental => Token exchange from Rest API => https://{shop}.myshopify.com/admin/oauth/access_token
       try {
-        const tknExchangeUrl = `https://${req.query.shop}.myshopify.com/admin/oauth/access_token`;
-        const tknExgOpions = {
+        const tknExchangeUrl = `https://${req.query.shop}/admin/oauth/access_token`;
 
-        }
         const response = await fetch(tknExchangeUrl, {
           method: "POST",
           headers: {
