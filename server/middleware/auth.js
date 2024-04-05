@@ -146,7 +146,7 @@ const authMiddleware = (app) => {
         const result = await response.json();
         console.log('result => ', result);
       } catch (error) {
-        console.log('Rest api error =>', code)
+        console.log('Rest api error =>', error)
       }
 
       await sessionHandler.storeSession(session);
