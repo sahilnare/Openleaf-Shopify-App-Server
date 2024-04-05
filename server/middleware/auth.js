@@ -72,6 +72,7 @@ const authMiddleware = (app) => {
 
   app.get("/api/auth/tokens", async (req, res) => {
     console.log('/api/auth/tokens query => ', req?.query);
+    console.log('/api/auth/tokens headesr => ', req.headers)
     try {
       const callbackResponse = await shopify.auth.callback({
         rawRequest: req,

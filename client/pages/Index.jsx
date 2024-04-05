@@ -90,7 +90,8 @@ const HomePage = () => {
 
   useEffect(() => {
     if (shopUrl) {
-      checkLogin(shopUrl)
+      // checkLogin(shopUrl)
+      fetch('/temp/url');
     }
   }, [shopUrl])
 

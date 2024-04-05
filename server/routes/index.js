@@ -334,5 +334,10 @@ userRoutes.get("/debug/createNewSubscription", async (req, res) => {
 
 // })
 
+userRoutes.get('/temp/url', async (req, res) => {
+  
+  console.log('in temp url')
+  return res.status(200).json({msg: 'hello'})
+})
 
 export default userRoutes;

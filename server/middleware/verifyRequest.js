@@ -9,6 +9,7 @@ const TEST_QUERY = `
 }`;
 
 const verifyRequest = async (req, res, next) => {
+  console.log(req?.headers);
   try {
     let { shop } = req.query;
     const sessionId = await shopify.session.getCurrentId({
