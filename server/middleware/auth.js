@@ -224,8 +224,10 @@ const authMiddleware = (app) => {
         rawResponse: res,
       });
 
+      console.log('temp => ', temp)
+
       return temp;
-      
+
     } catch (e) {
       console.error(`---> Error at /api/auth/tokens`, e);
       const { shop } = req.query;
