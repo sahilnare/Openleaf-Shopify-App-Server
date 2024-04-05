@@ -128,6 +128,10 @@ const authMiddleware = (app) => {
         }
         const response = await fetch(tknExchangeUrl, {
           method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
           body: JSON.stringify({
             client_id: process.env.SHOPIFY_API_KEY,
             client_secret: process.env.SHOPIFY_API_SECRET,
