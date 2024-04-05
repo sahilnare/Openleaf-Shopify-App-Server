@@ -24,61 +24,47 @@ function getSessionTokenFromUrlParam(request) {
 const authMiddleware = (app) => {
 
   app.get("/api/auth", async (req, res) => {
-    try {
-      if (!req.query.shop) {
-        return res.status(500).send("No shop provided");
-      }
+		try {
+			if (!req.query.shop) {
+			return res.status(500).send("No shop provided");
+			}
 
-	  console.log("This is /api/auth");
+			if (req.query.embedded === "1") {
+			const shop = shopify.utils.sanitizeShop(req.query.shop);
+			const queryParams = new URLSearchParams({
+				...req.query,
+				shop,
+				redirectUri: `https://${shopify.config.hostName}/api/auth?shop=${shop}`,
+			}).toString();
 
-	  console.log(req.query.shop);
-	  console.log(req.query);
-	  console.log(req.body);
+			return res.redirect(`/exitframe?${queryParams}`);
+			}
 
-      if (req.query.embedded === "1") {
-        const shop = shopify.utils.sanitizeShop(req.query.shop);
-		console.log("Sanitized shop");
-		console.log(shop);
-        const queryParams = new URLSearchParams({
-          ...req.query,
-          shop,
-          redirectUri: `https://${shopify.config.hostName}/api/auth?shop=${shop}`,
-        }).toString();
-
-        return res.redirect(`/exitframe?${queryParams}`);
-      }
-
-	  const authResponse = await shopify.auth.begin({
-        shop: req.query.shop,
-        callbackPath: "/api/auth/tokens",
-        isOnline: false,
-        rawRequest: req,
-        rawResponse: res,
-      });
-
-	  console.log(authResponse);
-
-      return authResponse;
-
-    } catch (e) {
-      console.error(`---> Error at /api/auth`, e);
-      const { shop } = req.query;
-	  console.error(shop);
-      switch (true) {
-        case e instanceof CookieNotFound:
-        case e instanceof InvalidOAuthError:
-        case e instanceof InvalidSession:
-          res.redirect(`/api/auth?shop=${shop}`);
-          break;
-        case e instanceof BotActivityDetected:
-          res.status(410).send(e.message);
-          break;
-        default:
-          res.status(500).send(e.message);
-          break;
-      }
-    }
-  });
+			return await shopify.auth.begin({
+			shop: req.query.shop,
+			callbackPath: "/api/auth/tokens",
+			isOnline: false,
+			rawRequest: req,
+			rawResponse: res,
+			});
+		} catch (e) {
+			console.error(`---> Error at /api/auth`, e);
+			const { shop } = req.query;
+			switch (true) {
+			case e instanceof CookieNotFound:
+			case e instanceof InvalidOAuthError:
+			case e instanceof InvalidSession:
+				res.redirect(`/api/auth?shop=${shop}`);
+				break;
+			case e instanceof BotActivityDetected:
+				res.status(410).send(e.message);
+				break;
+			default:
+				res.status(500).send(e.message);
+				break;
+			}
+		}
+	});
 
   app.get("/api/auth/tokens", async (req, res) => {
     console.log('/api/auth/tokens query => ', req?.query);
