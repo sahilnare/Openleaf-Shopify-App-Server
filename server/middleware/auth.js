@@ -82,22 +82,6 @@ const authMiddleware = (app) => {
 
       const { session } = callbackResponse;
 
-      // * Experimental => Getting data using /api/configdatashow
-      try {
-        const apiUrl = `https://${session.shop}/api/configdatashow`;
-        const response = await fetch(apiUrl, {
-          method: 'GET',
-          headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Access-Token': req?.query.code,
-        },
-        })
-        const result = await response.json();
-        console.log('API configshow data response => ', result);
-      } catch (error) {
-        console.log('API configshow data error => ', error);
-      }
-
       // * Experimental => Getting access token using shopifyApi => auth.tokenExchange
       // try {
         
@@ -134,7 +118,7 @@ const authMiddleware = (app) => {
             client_id: process.env.SHOPIFY_API_KEY,
             client_secret: process.env.SHOPIFY_API_SECRET,
             grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
-            subject_token: session.accessToken,
+            subject_token: req.query.code,
             subject_token_type: "urn:ietf:params:oauth:token-type:id_token",
             requested_token_type: "urn:shopify:params:oauth:token-type:offline-access-token"
           })
@@ -250,4 +234,20 @@ export default authMiddleware;
 //   console.log('Getting data using /admin/oauth/authorize => ', response);
 // } catch (error) {
 //   console.log('Rest api error => /admin/oauth/authorize => ', error);
+// }
+
+// * Experimental => Getting data using /api/configdatashow
+// try {
+//   const apiUrl = `https://${session.shop}/api/configdatashow`;
+//   const response = await fetch(apiUrl, {
+//     method: 'GET',
+//     headers: {
+//     'Content-Type': 'application/json',
+//     'X-Shopify-Access-Token': req?.query.code,
+//   },
+//   })
+//   const result = await response.json();
+//   console.log('API configshow data response => ', result);
+// } catch (error) {
+//   console.log('API configshow data error => ', error);
 // }
