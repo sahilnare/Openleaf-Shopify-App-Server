@@ -26,6 +26,8 @@ function getSessionTokenFromUrlParam(request) {
 const authMiddleware = (app) => {
 
   app.get("/api/auth", async (req, res) => {
+    console.log('/api/auth/ query => ', req?.query);
+    console.log('/api/auth headesr => ', req.headers)
 		try {
 			if (!req.query.shop) {
 			return res.status(500).send("No shop provided");
