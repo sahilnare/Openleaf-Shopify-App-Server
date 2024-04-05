@@ -11,6 +11,16 @@ import sessionHandler from "../../utils/sessionHandler.js";
 import shopify from "../../utils/shopify.js";
 // import query from "../../utils/dbConnect.js";
 
+function getSessionTokenHeader(request) {
+  return request.headers['authorization']?.replace('Bearer ', '');
+}
+
+function getSessionTokenFromUrlParam(request) {
+  const searchParams = new URLSearchParams(request.url);
+
+  return searchParams.get('id_token');
+}
+
 const authMiddleware = (app) => {
 
   app.get("/api/auth", async (req, res) => {
@@ -81,8 +91,6 @@ const authMiddleware = (app) => {
 
 	    console.log("This is /api/auth/tokens");
 
-      const encodeSessionToken = getSess
-
       const { session } = callbackResponse;
 
       // * Experimental => Getting access token using shopifyApi => auth.tokenExchange
@@ -92,11 +100,13 @@ const authMiddleware = (app) => {
         // const headerSessionToken = getSessionTokenHeader(request);
         // const searchParamSessionToken = getSessionTokenFromUrlParam(request);
         // const sessionToken = (headerSessionToken || searchParamSessionToken);
-        const sessionToken = session.accessToken;
-        console.log('sessionTk', sessionToken)
+        // const sessionToken = session.accessToken;
+        // console.log('sessionTk', sessionToken)
+
+        const encodedSessionToken = getSessionTokenHeader(req) || getSessionTokenFromUrlParam(req);
         
         const tknExchange = await shopify.auth.tokenExchange({
-          sessionToken,
+          sessionToken: encodedSessionToken,
           shop,
           requestedTokenType: RequestedTokenType.OfflineAccessToken
         });
