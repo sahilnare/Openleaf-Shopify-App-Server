@@ -10,6 +10,7 @@ import StoreModel from "../../utils/models/StoreModel.js";
 import sessionHandler from "../../utils/sessionHandler.js";
 import shopify from "../../utils/shopify.js";
 import { crypto } from "@shopify/shopify-api/runtime";
+import querystring from 'querystring';
 // import query from "../../utils/dbConnect.js";
 
 function getSessionTokenHeader(request) {
