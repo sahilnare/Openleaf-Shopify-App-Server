@@ -137,7 +137,7 @@ const authMiddleware = (app) => {
       const code = req.query.code;
       console.log('api key ', process.env.SHOPIFY_API_KEY, process.env.SHOPIFY_API_SECRET);
       try {
-        const { query } = request;
+        const { query } = req;
         const { code, hmac, shop } = query;
 
         const map = JSON.parse(JSON.stringify(query));
