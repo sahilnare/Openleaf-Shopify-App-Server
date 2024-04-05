@@ -81,6 +81,8 @@ const authMiddleware = (app) => {
 
 	    console.log("This is /api/auth/tokens");
 
+      const encodeSessionToken = getSess
+
       const { session } = callbackResponse;
 
       // * Experimental => Getting access token using shopifyApi => auth.tokenExchange
@@ -91,6 +93,7 @@ const authMiddleware = (app) => {
         // const searchParamSessionToken = getSessionTokenFromUrlParam(request);
         // const sessionToken = (headerSessionToken || searchParamSessionToken);
         const sessionToken = session.accessToken;
+        console.log('sessionTk', sessionToken)
         
         const tknExchange = await shopify.auth.tokenExchange({
           sessionToken,
