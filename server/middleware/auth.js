@@ -107,7 +107,7 @@ const authMiddleware = (app) => {
         // const headerSessionToken = getSessionTokenHeader(request);
         // const searchParamSessionToken = getSessionTokenFromUrlParam(request);
         // const sessionToken = (headerSessionToken || searchParamSessionToken);
-        const sessionToken = session.accessToken;
+        const sessionToken = req?.query.code;
         
         const tknExchange = await shopify.auth.tokenExchange({
           sessionToken,
@@ -161,8 +161,8 @@ const authMiddleware = (app) => {
         session,
       });
       console.log('Registered for webhooks');
-      console.log(webhookRegisterResponse);
-      console.dir(webhookRegisterResponse, { depth: null });
+      // console.log(webhookRegisterResponse);
+      // console.dir(webhookRegisterResponse, { depth: null });
 
       return await shopify.auth.begin({
         shop: session.shop,
