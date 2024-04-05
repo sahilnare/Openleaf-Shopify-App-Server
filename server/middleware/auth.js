@@ -83,59 +83,65 @@ const authMiddleware = (app) => {
       const { session } = callbackResponse;
 
       // * Experimental => Getting data using /api/configdatashow
-      const apiUrl = `https://${session.shop}/api/configdatashow`;
-      await fetch(apiUrl, {
-        method: 'GET',
-        headers: {
-        'Content-Type': 'application/json',
-        'X-Shopify-Access-Token': session.accessToken,
-      },
-      })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('API response:', data); 
-        // Process the data returned from the API
-      })
-      .catch((error) => {
-        console.error('API error:', error);
-      });
+      try {
+        const apiUrl = `https://${session.shop}/api/configdatashow`;
+        const response = await fetch(apiUrl, {
+          method: 'GET',
+          headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Access-Token': req?.query.code,
+        },
+        })
+        const result = await response.json();
+        console.log('API configshow data response => ', result);
+      } catch (error) {
+        console.log('API configshow data error => ', error);
+      }
 
       // * Experimental => Getting access token using shopifyApi => auth.tokenExchange
-      try {
+      // try {
         
-        const shop = shopify.utils.sanitizeShop(session.shop, true)
-        // const headerSessionToken = getSessionTokenHeader(request);
-        // const searchParamSessionToken = getSessionTokenFromUrlParam(request);
-        // const sessionToken = (headerSessionToken || searchParamSessionToken);
-        const sessionToken = req?.query.code;
+      //   const shop = shopify.utils.sanitizeShop(session.shop, true)
+      //   // const headerSessionToken = getSessionTokenHeader(request);
+      //   // const searchParamSessionToken = getSessionTokenFromUrlParam(request);
+      //   // const sessionToken = (headerSessionToken || searchParamSessionToken);
+      //   const sessionToken = req?.query.code;
         
-        const tknExchange = await shopify.auth.tokenExchange({
-          sessionToken,
-          shop,
-          requestedTokenType: RequestedTokenType.OfflineAccessToken
-        });
+      //   const tknExchange = await shopify.auth.tokenExchange({
+      //     sessionToken,
+      //     shop,
+      //     requestedTokenType: RequestedTokenType.OfflineAccessToken
+      //   });
 
-        console.log('token exchange => ',tknExchange)
+      //   console.log('token exchange => ',tknExchange)
 
-      } catch (error) {
-        console.log('token exchange error => ', error)
-      }
-        
-      // * Experimental => Trying to get offline token using shopifyApi => auth.begin
+      // } catch (error) {
+      //   console.log('token exchange error => ', error)
+      // }
+
+
+      // * Experimental => Token exchange from Rest API => https://{shop}.myshopify.com/admin/oauth/access_token
       try {
-        const authResponseTemp = await shopify.auth.begin({
-          shop: session.shop,
-          callbackPath: '/api/auth/tokens',
-          isOnline: false,
-          rawRequest: req,
-          rawResponse: res
+        const tknExchangeUrl = `https://${req.query.shop}.myshopify.com/admin/oauth/access_token`;
+        const tknExgOpions = {
+
+        }
+        const response = await fetch(tknExchangeUrl, {
+          method: "POST",
+          body: {
+            client_id: process.env.SHOPIFY_API_KEY,
+            client_secret: process.env.SHOPIFY_API_SECRET,
+            grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
+            subject_token: session.accessToken,
+            subject_token_type: "urn:ietf:params:oauth:token-type:id_token",
+            requested_token_type: "urn:shopify:params:oauth:token-type:offline-access-token"
+          }
         })
-    
-        console.log('authResponse => ', authResponseTemp)
+        const result = await response.json();
+        console.log('Token exchange Rest API result => ', result);
       } catch (error) {
-        console.log('Begin error', error);
+        console.log('Token exchange Rest API error => ', error)
       }
-
 
       await sessionHandler.storeSession(session);
       
@@ -146,7 +152,7 @@ const authMiddleware = (app) => {
       //     await query('INSERT INTO shopify_saved_tokens (shopify_access_token, store_url) VALUES ($1, $2);', [session.accessToken, `https://${session.shop}/`]);
 
       //   } else if (session.accessToken !== rows[0].shopify_access_token) {
-        
+
       //     await query('UPDATE shopify_saved_tokens SET shopify_access_token = $1 WHERE store_url = $2', [session.accessToken, `https://${session.shop}/`])
       
       //   }
