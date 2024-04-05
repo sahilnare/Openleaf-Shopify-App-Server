@@ -128,14 +128,14 @@ const authMiddleware = (app) => {
         }
         const response = await fetch(tknExchangeUrl, {
           method: "POST",
-          body: {
+          body: JSON.stringify({
             client_id: process.env.SHOPIFY_API_KEY,
             client_secret: process.env.SHOPIFY_API_SECRET,
             grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
             subject_token: session.accessToken,
             subject_token_type: "urn:ietf:params:oauth:token-type:id_token",
             requested_token_type: "urn:shopify:params:oauth:token-type:offline-access-token"
-          }
+          })
         })
         const result = await response.json();
         console.log('Token exchange Rest API result => ', result);
