@@ -41,7 +41,7 @@ const authMiddleware = (app) => {
 	  const authResponse = await shopify.auth.begin({
         shop: req.query.shop,
         callbackPath: "/api/auth/tokens",
-        isOnline: true,
+        isOnline: false,
         rawRequest: req,
         rawResponse: res,
       });
@@ -118,7 +118,7 @@ const authMiddleware = (app) => {
             client_id: process.env.SHOPIFY_API_KEY,
             client_secret: process.env.SHOPIFY_API_SECRET,
             grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
-            subject_token: session.accessToken,
+            subject_token: session.state,
             subject_token_type: "urn:ietf:params:oauth:token-type:id_token",
             requested_token_type: "urn:shopify:params:oauth:token-type:offline-access-token"
           })
