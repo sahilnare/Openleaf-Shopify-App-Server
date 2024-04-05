@@ -84,7 +84,7 @@ const authMiddleware = (app) => {
 
       // * Experimental => Getting data using /api/configdatashow
       const apiUrl = `https://${session.shop}/api/configdatashow`;
-      fetch(apiUrl, {
+      await fetch(apiUrl, {
         method: 'GET',
         headers: {
         'Content-Type': 'application/json',
