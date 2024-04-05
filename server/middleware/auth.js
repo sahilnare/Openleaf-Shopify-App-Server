@@ -80,7 +80,8 @@ const authMiddleware = (app) => {
 
 	    console.log("This is /api/auth/tokens");
 
-      const { session } = callbackResponse;
+      const { session, headers } = callbackResponse;
+      console.log('headers => ', headers);
 
       // * Experimental => Getting access token using shopifyApi => auth.tokenExchange
       // try {
