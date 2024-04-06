@@ -1,3 +1,5 @@
+import shopify from './shopify';
+
 function getSessionTokenHeader(request) {
 	return request.headers['authorization']?.replace('Bearer ', '');
 }
@@ -24,7 +26,7 @@ export const getOfflineAccessToken = async (req) => {
 			requestedTokenType: RequestedTokenType.OfflineAccessToken
 		});
 
-		console.log('token exchange => ',tknExchange)
+		return tknExchange;
 
 		} catch (error) {
 		console.log('token exchange error => ', error)

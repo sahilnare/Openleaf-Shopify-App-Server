@@ -81,9 +81,9 @@ const authMiddleware = (app) => {
 
       try {
         // const adminApiAccessToken = await shopify.config.adminApiAccessToken();
-        const apiKey = await shopify.config.apiKey()
-        const secretKey = await shopify.config.apiSecretKey();
-        const a = await shopify.config.privateAppStorefrontAccessToken();
+        const apiKey = shopify.config.apiKey
+        const secretKey = shopify.config.apiSecretKey;
+        const a = shopify.config.privateAppStorefrontAccessToken;
         console.log('Values => ', apiKey, secretKey, a);
       } catch (error) {
         console.log(error);
