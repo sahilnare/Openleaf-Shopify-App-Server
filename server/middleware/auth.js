@@ -47,7 +47,7 @@ const authMiddleware = (app) => {
 			return await shopify.auth.begin({
 			shop: req.query.shop,
 			callbackPath: "/api/auth/tokens",
-			isOnline: false,
+			isOnline: true,
 			rawRequest: req,
 			rawResponse: res,
 			});
@@ -84,30 +84,30 @@ const authMiddleware = (app) => {
       const { session } = callbackResponse;
 
       // * Experimental => Getting access token using shopifyApi => auth.tokenExchange
-      // try {
+      try {
         
-      //   const shop = shopify.utils.sanitizeShop(session.shop, true)
-      //   // const headerSessionToken = getSessionTokenHeader(request);
-      //   // const searchParamSessionToken = getSessionTokenFromUrlParam(request);
-      //   // const sessionToken = (headerSessionToken || searchParamSessionToken);
-      //   // const sessionToken = session.accessToken;
-      //   // console.log('sessionTk', sessionToken)
+        const shop = shopify.utils.sanitizeShop(session.shop, true)
+        // const headerSessionToken = getSessionTokenHeader(request);
+        // const searchParamSessionToken = getSessionTokenFromUrlParam(request);
+        // const sessionToken = (headerSessionToken || searchParamSessionToken);
+        // const sessionToken = session.accessToken;
+        // console.log('sessionTk', sessionToken)
 
-      //   const encodedSessionToken = getSessionTokenHeader(req) || getSessionTokenFromUrlParam(req);
+        const encodedSessionToken = getSessionTokenHeader(req) || getSessionTokenFromUrlParam(req) || req.query.code;
 
-      //   console.log(encodedSessionToken);
+        console.log(encodedSessionToken);
         
-      //   const tknExchange = await shopify.auth.tokenExchange({
-      //     sessionToken: encodedSessionToken,
-      //     shop,
-      //     requestedTokenType: RequestedTokenType.OfflineAccessToken
-      //   });
+        const tknExchange = await shopify.auth.tokenExchange({
+          sessionToken: encodedSessionToken,
+          shop,
+          requestedTokenType: RequestedTokenType.OfflineAccessToken
+        });
 
-      //   console.log('token exchange => ',tknExchange)
+        console.log('token exchange => ',tknExchange)
 
-      // } catch (error) {
-      //   console.log('token exchange error => ', error)
-      // }
+      } catch (error) {
+        console.log('token exchange error => ', error)
+      }
 
 
       // * Experimental => Token exchange from Rest API => https://{shop}.myshopify.com/admin/oauth/access_token
@@ -137,51 +137,53 @@ const authMiddleware = (app) => {
       // } catch (error) {
       //   console.log('Token exchange Rest API error => ', error)
       // }
-      const code = req.query.code;
-      console.log('api key ', process.env.SHOPIFY_API_KEY, process.env.SHOPIFY_API_SECRET);
-      try {
-        const { query } = req;
-        const { code, hmac, shop } = query;
 
-        const map = JSON.parse(JSON.stringify(query));
-        delete map['signature'];
-        delete map['hmac'];
+      // * GitHub Testing
+      // const code = req.query.code;
+      // console.log('api key ', process.env.SHOPIFY_API_KEY, process.env.SHOPIFY_API_SECRET);
+      // try {
+      //   const { query } = req;
+      //   const { code, hmac, shop } = query;
 
-        const message = querystring.stringify(map);
-        const generated_hash = crypto
-          .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
-          .update(message)
-          .digest('hex');
+      //   const map = JSON.parse(JSON.stringify(query));
+      //   delete map['signature'];
+      //   delete map['hmac'];
 
-        if (generated_hash !== hmac) {
-          return response.status(400).send('HMAC validation failed');
-        }
+      //   const message = querystring.stringify(map);
+      //   const generated_hash = crypto
+      //     .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
+      //     .update(message)
+      //     .digest('hex');
 
-        if (shop == null) {
-          return response.status(400).send('Expected a shop query parameter');
-        }
+      //   if (generated_hash !== hmac) {
+      //     return response.status(400).send('HMAC validation failed');
+      //   }
 
-        const requestBody = querystring.stringify({
-          code,
-          client_id: process.env.SHOPIFY_API_KEY,
-          client_secret: process.env.SHOPIFY_API_SECRET,
-        });
+      //   if (shop == null) {
+      //     return response.status(400).send('Expected a shop query parameter');
+      //   }
 
-        const remoteResponse = await fetch(`https://${shop}/admin/oauth/access_token`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': Buffer.byteLength(requestBody),
-          },
-          body: requestBody,
-        });
+      //   const requestBody = querystring.stringify({
+      //     code,
+      //     client_id: process.env.SHOPIFY_API_KEY,
+      //     client_secret: process.env.SHOPIFY_API_SECRET,
+      //   });
 
-        const responseBody = await remoteResponse.json();
-        const accessToken = responseBody.access_token;
-        console.log('AccessToken', accessToken);
-      } catch (error) {
-        console.log('Rest api error =>', error)
-      }
+      //   const remoteResponse = await fetch(`https://${shop}/admin/oauth/access_token`, {
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/x-www-form-urlencoded',
+      //       'Content-Length': Buffer.byteLength(requestBody),
+      //     },
+      //     body: requestBody,
+      //   });
+
+      //   const responseBody = await remoteResponse.json();
+      //   const accessToken = responseBody.access_token;
+      //   console.log('AccessToken', accessToken);
+      // } catch (error) {
+      //   console.log('Rest api error =>', error)
+      // }
 
       await sessionHandler.storeSession(session);
       
