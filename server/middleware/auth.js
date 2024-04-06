@@ -13,16 +13,6 @@ import { crypto } from "@shopify/shopify-api/runtime";
 import querystring from 'querystring';
 import query from "../../utils/dbConnect.js";
 
-function getSessionTokenHeader(request) {
-  return request.headers['authorization']?.replace('Bearer ', '');
-}
-
-function getSessionTokenFromUrlParam(request) {
-  const searchParams = new URLSearchParams(request.url);
-
-  return searchParams.get('id_token');
-}
-
 const authMiddleware = (app) => {
 
   app.get("/api/auth", async (req, res) => {
