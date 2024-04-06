@@ -83,11 +83,15 @@ const authMiddleware = (app) => {
 
       const { session } = callbackResponse;
 
-      const adminApiAccessToken = await shopify.config.adminApiAccessToken();
-      const apiKey = await shopify.config.apiKey()
-      const secretKey = await shopify.config.apiSecretKey();
-      const a = await shopify.config.privateAppStorefrontAccessToken();
-      console.log('Values => ', adminApiAccessToken, apiKey, secretKey, a);
+      try {
+        // const adminApiAccessToken = await shopify.config.adminApiAccessToken();
+        const apiKey = await shopify.config.apiKey()
+        const secretKey = await shopify.config.apiSecretKey();
+        const a = await shopify.config.privateAppStorefrontAccessToken();
+        console.log('Values => ', apiKey, secretKey, a);
+      } catch (error) {
+        console.log(error);
+      }
 
       // * Experimental => Getting access token using shopifyApi => auth.tokenExchange
       try {
