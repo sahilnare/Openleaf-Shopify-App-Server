@@ -14,12 +14,7 @@ export const getOfflineAccessToken = async (req, res) => {
 	console.log('getOfflineAccessToken')
 	try {
 
-		console.log("req.query =>", req.query);
-		const shop = new URLSearchParams(request.url).get('shop');
-		const shop2 = shopify.utils.sanitizeShop(session.shop, true);
-		console.log("shop =>", shop)
-		console.log("shop2 =>", shop2);
-
+		const shop = shopify.utils.sanitizeShop(req.query.shop, true);
 
 		const encodedSessionToken = getSessionTokenHeader(req) || getSessionTokenFromUrlParam(req);
 
