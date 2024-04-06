@@ -26,8 +26,7 @@ function getSessionTokenFromUrlParam(request) {
 const authMiddleware = (app) => {
 
   app.get("/api/auth", async (req, res) => {
-    console.log('/api/auth/ query => ', req?.query);
-    console.log('/api/auth headesr => ', req.headers)
+    console.log('/api/auth/ ');
 		try {
 			if (!req.query.shop) {
 			return res.status(500).send("No shop provided");
@@ -71,15 +70,12 @@ const authMiddleware = (app) => {
 	});
 
   app.get("/api/auth/tokens", async (req, res) => {
-    console.log('/api/auth/tokens query => ', req?.query);
-    console.log('/api/auth/tokens headesr => ', req.headers)
+    console.log('/api/auth/tokens');
     try {
       const callbackResponse = await shopify.auth.callback({
         rawRequest: req,
         rawResponse: res,
       });
-
-	    console.log("This is /api/auth/tokens");
 
       const { session } = callbackResponse;
 
@@ -94,25 +90,25 @@ const authMiddleware = (app) => {
       }
 
       // * Experimental => Getting access token using shopifyApi => auth.tokenExchange
-      try {
+    //   try {
         
-        const shop = shopify.utils.sanitizeShop(session.shop, true)
+    //     const shop = shopify.utils.sanitizeShop(session.shop, true)
 
-        const encodedSessionToken = getSessionTokenHeader(req) || getSessionTokenFromUrlParam(req) ||adminApiAccessToken || session.accessToken;
+    //     // const encodedSessionToken = getSessionTokenHeader(req) || getSessionTokenFromUrlParam(req) ||adminApiAccessToken || session.accessToken;
 
-        console.log(encodedSessionToken);
+    //     // console.log(encodedSessionToken);
         
-        const tknExchange = await shopify.auth.tokenExchange({
-          sessionToken: encodedSessionToken,
-          shop,
-          requestedTokenType: RequestedTokenType.OfflineAccessToken
-        });
+    //     const tknExchange = await shopify.auth.tokenExchange({
+    //       sessionToken: encodedSessionToken,
+    //       shop,
+    //       requestedTokenType: RequestedTokenType.OfflineAccessToken
+    //     });
 
-        console.log('token exchange => ',tknExchange)
+    //     console.log('token exchange => ',tknExchange)
 
-      } catch (error) {
-        console.log('token exchange error => ', error)
-      }
+    //   } catch (error) {
+    //     console.log('token exchange error => ', error)
+    //   }
 
 
       // * Experimental => Token exchange from Rest API => https://{shop}.myshopify.com/admin/oauth/access_token
@@ -207,7 +203,6 @@ const authMiddleware = (app) => {
       } catch (error) {
         console.log('Postgress error =>', error)
       }
-  	  console.log(session);
 	  // # Have to save Shopify Access Token here
 
       const webhookRegisterResponse = await shopify.webhooks.register({
@@ -246,22 +241,15 @@ const authMiddleware = (app) => {
   });
 
   app.get("/api/auth/callback", async (req, res) => {
-    console.log('/api/auth/callback query => ', req?.query)
-    console.log('/api/auth/callback headers => ', res.headers);
+    console.log('/api/auth/callback')
+
     try {
       const callbackResponse = await shopify.auth.callback({
         rawRequest: req,
         rawResponse: res,
       });
 
-	  console.log("This is /api/auth/callback");
-
       const { session } = callbackResponse;
-
-	  
-	  console.log("/api/auth/callback header => ", req.headers)
-	  console.log("/api/auth/callback session => ", session)
-	  
 
       await sessionHandler.storeSession(session);
 

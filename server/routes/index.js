@@ -160,94 +160,97 @@ userRoutes.get("/debug/createNewSubscription", async (req, res) => {
 });
 
 userRoutes.get("/login/credentials", async (req, res) => {
+
+	
+	console.log('req.headers in login/credentials =>', req?.headers);
+
   const {email, password, shop, apikey} = req.query;
-
-  try {
+	console.log("email, password, shop, apikey  => ", email, password, shop, apikey)
+//   try {
     
-    const { rows } = await query('SELECT * FROM client_users WHERE email = $1', [email])
-    if (rows.length === 0) {
+//     const { rows } = await query('SELECT * FROM client_users WHERE email = $1', [email])
+//     if (rows.length === 0) {
 
-      return res.status(401).json({message: 'Invallid Credentials'});
+//       return res.status(401).json({message: 'Invallid Credentials'});
 
-    }
+//     }
 
-    if (await argon2.verify(rows[0].password, password)) {
+//     if (await argon2.verify(rows[0].password, password)) {
 
-      // # Get JWT token
-      const user_id = rows[0].user_id;
+//       // # Get JWT token
+//       const user_id = rows[0].user_id;
 
-      const { rows: rows1 } = await query('SELECT * FROM shopify_saved_tokens WHERE store_url = $1', [`https://${shop}/`])
+//       const { rows: rows1 } = await query('SELECT * FROM shopify_saved_tokens WHERE store_url = $1', [`https://${shop}/`])
 
-      if (rows1.length === 0) {
-        return res.status(401).json({message: 'No shop present in database'});
-      }
+//       if (rows1.length === 0) {
+//         return res.status(401).json({message: 'No shop present in database'});
+//       }
 
-      const shopify_access_token = rows1[0].shopify_access_token;
+//       const shopify_access_token = rows1[0].shopify_access_token;
 
-      const webhookId = await insertShopifyUser(user_id, email, apikey, 'manual', shopify_access_token, `https://${shop}/`)
+//       const webhookId = await insertShopifyUser(user_id, email, apikey, 'manual', shopify_access_token, `https://${shop}/`)
 
-      // try {
-      //   shopify.webhooks.addHandlers({
-      //     ORDERS_CREATE: {
-      //       deliveryMethod: DeliveryMethod.Http,
-      //       callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`,
-      //       callback: openleafOrderCreated
-      //     },
-      //     ORDERS_UPDATED: {
-      //       deliveryMethod: DeliveryMethod.Http,
-      //       callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/orderUpdate/${webhookId}`,
-      //       callback: openleafOrderUpdated
-      //     }
-      //   })
-      // } catch (error) {
-      //   console.log('Error in setting webhook', error)
-      // }
+//       // try {
+//       //   shopify.webhooks.addHandlers({
+//       //     ORDERS_CREATE: {
+//       //       deliveryMethod: DeliveryMethod.Http,
+//       //       callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`,
+//       //       callback: openleafOrderCreated
+//       //     },
+//       //     ORDERS_UPDATED: {
+//       //       deliveryMethod: DeliveryMethod.Http,
+//       //       callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/orderUpdate/${webhookId}`,
+//       //       callback: openleafOrderUpdated
+//       //     }
+//       //   })
+//       // } catch (error) {
+//       //   console.log('Error in setting webhook', error)
+//       // }
 
-      await insertShopifyPackaging(user_id);
+//       await insertShopifyPackaging(user_id);
 
-      const url = `https://${shop}/admin/api/2024-01/locations.json`;
-      const options = {
-        method: 'GET',
-        headers: {
-          'X-Shopify-Access-Token': `${shopify_access_token}`,
-          'Content-Type': 'application/json'
-        }
-      };
+//       const url = `https://${shop}/admin/api/2024-01/locations.json`;
+//       const options = {
+//         method: 'GET',
+//         headers: {
+//           'X-Shopify-Access-Token': `${shopify_access_token}`,
+//           'Content-Type': 'application/json'
+//         }
+//       };
 
-      const response = await fetch(url, options);
+//       const response = await fetch(url, options);
 
-      const result = await response.json();
-      const locations = result?.locations;
+//       const result = await response.json();
+//       const locations = result?.locations;
 
-      const { rows: pickup_locations_rows } = await query('SELECT * FROM pickup_locations WHERE user_id = $1', [user_id]);
+//       const { rows: pickup_locations_rows } = await query('SELECT * FROM pickup_locations WHERE user_id = $1', [user_id]);
       
-      if (pickup_locations_rows.length === 0) {
+//       if (pickup_locations_rows.length === 0) {
 
-        return res.status(400).json(`No pickup location found `);
+//         return res.status(400).json(`No pickup location found `);
 
-      }
+//       }
 
-      const wareHouseName = pickup_locations_rows[0].warehouse_name;
+//       const wareHouseName = pickup_locations_rows[0].warehouse_name;
 
-      await insertShopifyLocation(wareHouseName, locations, user_id);
+//       await insertShopifyLocation(wareHouseName, locations, user_id);
 
-      return res.status(201).json({message: 'Shopify User successfully created.'})
+//       return res.status(201).json({message: 'Shopify User successfully created.'})
 
-    } else {
+//     } else {
 
-      return res.status(401).json({message: 'Invallid Credentials'});
+//       return res.status(401).json({message: 'Invallid Credentials'});
 
-    }
+//     }
 
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({error})
-  }
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({error})
+//   }
   
 })
 
 userRoutes.get('/islogin', async (req, res) => {
-  console.log('req.query in islogin =>', req?.query);
   console.log('req.headers in islogin =>', req?.headers);
   const { shop } = req.query;
   try {
