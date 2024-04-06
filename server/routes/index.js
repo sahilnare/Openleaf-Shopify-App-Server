@@ -162,7 +162,9 @@ userRoutes.get("/debug/createNewSubscription", async (req, res) => {
 
 userRoutes.get("/login/credentials", async (req, res) => {
 	console.log('/login/credentials')
-  const {email, password, shop, apikey} = req.query;
+
+  	const {email, password, shop, apikey} = req.query;
+	
 	console.log("email, password, shop, apikey  => ", email, password, shop, apikey)
 
 	const offline_access_token = await getOfflineAccessToken(req);
