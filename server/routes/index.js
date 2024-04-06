@@ -12,15 +12,18 @@ import query from "../../utils/dbConnect.js";
 const userRoutes = Router();
 
 userRoutes.get("/", (req, res) => {
+	console.log('/api/apps/ get userRoutes')
   const sendData = { text: "This is coming from /apps/api route." };
   return res.status(200).json(sendData);
 });
 
 userRoutes.post("/", (req, res) => {
+	console.log('/api/apps/ post userRoutes')
   return res.status(200).json(req.body);
 });
 
 userRoutes.get("/debug/gql", async (req, res) => {
+	console.log('/api/apps/debug/gql userRoutes')
   //false for offline session, true for online session
   const { client } = await clientProvider.graphqlClient({
     req,
@@ -40,6 +43,7 @@ userRoutes.get("/debug/gql", async (req, res) => {
 });
 
 userRoutes.get("/debug/activeWebhooks", async (req, res) => {
+	console.log('/api/apps/debug/activeWebhooks userRoutes')
   const { client } = await clientProvider.graphqlClient({
     req,
     res,
