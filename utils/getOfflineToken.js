@@ -52,7 +52,9 @@ export const getOfflineAccessToken = async (req, res) => {
         const result = await response.json();
         console.log('Token exchange Rest API result => ', result);
 
-		} catch (error) {
+		return result.access_token;
+
+	} catch (error) {
 		console.log('token exchange error => ', error)
       }
 }
