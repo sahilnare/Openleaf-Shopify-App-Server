@@ -12,13 +12,13 @@ import query from "../../utils/dbConnect.js";
 const userRoutes = Router();
 
 userRoutes.get("/", (req, res) => {
-	console.log('/api/apps/ get userRoutes')
+	console.log('/api/apps/ get userRoutes', req?.headers)
   const sendData = { text: "This is coming from /apps/api route." };
   return res.status(200).json(sendData);
 });
 
 userRoutes.post("/", (req, res) => {
-	console.log('/api/apps/ post userRoutes')
+	console.log('/api/apps/ post userRoutes', req?.headers)
   return res.status(200).json(req.body);
 });
 
@@ -248,7 +248,7 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
 userRoutes.get('/islogin', async (req, res) => {
   console.log('req.query in islogin =>', req?.query);
-
+  console.log('req.headers in islogin =>', req?.headers);
   const { shop } = req.query;
   try {
     
