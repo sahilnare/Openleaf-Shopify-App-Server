@@ -253,7 +253,6 @@ userRoutes.get("/login/credentials", async (req, res) => {
 })
 
 userRoutes.get('/islogin', async (req, res) => {
-  console.log('req.headers in islogin =>', req?.headers);
   const { shop } = req.query;
   try {
     
