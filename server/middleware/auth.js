@@ -83,6 +83,12 @@ const authMiddleware = (app) => {
 
       const { session } = callbackResponse;
 
+      const sessionId = await shopify.session.getOfflineId(req.query.shop);
+      console.log('session Id => ', sessionId);
+
+      const currentId = await shopify.session.getJwtSessionId(req.query.shop, req.query.host);
+      console.log('curentId => ', currentId);
+
       // * Experimental => Getting access token using shopifyApi => auth.tokenExchange
       try {
         
