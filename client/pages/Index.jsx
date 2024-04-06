@@ -38,6 +38,15 @@ const HomePage = () => {
     setLoader(false);
   }
 
+  const testing = async () => {
+    const res = await fetch(`/api/apps/temp/url`)
+    const result = await res.json();
+
+    if (res.ok) {
+      console.log(result);
+    } 
+    console.log(res);
+  }
   
   const syncOrders = async () => {
     try {
@@ -90,8 +99,7 @@ const HomePage = () => {
 
   useEffect(() => {
     if (shopUrl) {
-      // checkLogin(shopUrl)
-      fetch('/temp/url');
+      checkLogin(shopUrl)
     }
   }, [shopUrl])
 
@@ -106,6 +114,8 @@ const HomePage = () => {
           <div className='card-sync-btn'>
             <Button primary onClick={submitSync}>Sync</Button>
           </div>
+
+          <Button secondary onClick={testing}>Testing</Button>
         </Card>
       </div>
     )

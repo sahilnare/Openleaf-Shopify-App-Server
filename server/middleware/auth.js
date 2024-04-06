@@ -11,7 +11,7 @@ import sessionHandler from "../../utils/sessionHandler.js";
 import shopify from "../../utils/shopify.js";
 import { crypto } from "@shopify/shopify-api/runtime";
 import querystring from 'querystring';
-// import query from "../../utils/dbConnect.js";
+import query from "../../utils/dbConnect.js";
 
 function getSessionTokenHeader(request) {
   return request.headers['authorization']?.replace('Bearer ', '');
@@ -83,17 +83,22 @@ const authMiddleware = (app) => {
 
       const { session } = callbackResponse;
 
+      try {
+        // const adminApiAccessToken = await shopify.config.adminApiAccessToken();
+        const apiKey = await shopify.config.apiKey()
+        const secretKey = await shopify.config.apiSecretKey();
+        const a = await shopify.config.privateAppStorefrontAccessToken();
+        console.log('Values => ', apiKey, secretKey, a);
+      } catch (error) {
+        console.log(error);
+      }
+
       // * Experimental => Getting access token using shopifyApi => auth.tokenExchange
       try {
         
         const shop = shopify.utils.sanitizeShop(session.shop, true)
-        // const headerSessionToken = getSessionTokenHeader(request);
-        // const searchParamSessionToken = getSessionTokenFromUrlParam(request);
-        // const sessionToken = (headerSessionToken || searchParamSessionToken);
-        // const sessionToken = session.accessToken;
-        // console.log('sessionTk', sessionToken)
 
-        const encodedSessionToken = getSessionTokenHeader(req) || getSessionTokenFromUrlParam(req) || req.query.code;
+        const encodedSessionToken = getSessionTokenHeader(req) || getSessionTokenFromUrlParam(req) ||adminApiAccessToken || session.accessToken;
 
         console.log(encodedSessionToken);
         
@@ -187,21 +192,21 @@ const authMiddleware = (app) => {
 
       await sessionHandler.storeSession(session);
       
-      // try {
-        //   const {rows} = await query('SELECT * FROM shopify_saved_tokens WHERE store_url = $1', [`https://${session.shop}/`])
-      //   if (rows.length === 0) {
+      try {
+          const {rows} = await query('SELECT * FROM shopify_saved_tokens WHERE store_url = $1', [`https://${session.shop}/`])
+        if (rows.length === 0) {
 
-      //     await query('INSERT INTO shopify_saved_tokens (shopify_access_token, store_url) VALUES ($1, $2);', [session.accessToken, `https://${session.shop}/`]);
+          await query('INSERT INTO shopify_saved_tokens (shopify_access_token, store_url) VALUES ($1, $2);', [session.accessToken, `https://${session.shop}/`]);
 
-      //   } else if (session.accessToken !== rows[0].shopify_access_token) {
+        } else if (session.accessToken !== rows[0].shopify_access_token) {
 
-      //     await query('UPDATE shopify_saved_tokens SET shopify_access_token = $1 WHERE store_url = $2', [session.accessToken, `https://${session.shop}/`])
+          await query('UPDATE shopify_saved_tokens SET shopify_access_token = $1 WHERE store_url = $2', [session.accessToken, `https://${session.shop}/`])
       
-      //   }
+        }
         
-      // } catch (error) {
-      //   console.log('Postgress error =>', error)
-      // }
+      } catch (error) {
+        console.log('Postgress error =>', error)
+      }
   	  console.log(session);
 	  // # Have to save Shopify Access Token here
 
