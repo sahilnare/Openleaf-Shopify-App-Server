@@ -8,7 +8,7 @@ const searchParams = new URLSearchParams(request.url);
 return searchParams.get('id_token');
 }
 
-const getOfflineAccessToken = async (req) => {
+export const getOfflineAccessToken = async (req) => {
 	console.log('getOfflineAccessToken')
 	try {
         

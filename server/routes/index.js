@@ -9,6 +9,7 @@ import { insertShopifyLocation, insertShopifyPackaging, insertShopifyUser } from
 import logger from "../logger.js";
 
 import query from "../../utils/dbConnect.js";
+import { getOfflineAccessToken } from '../../utils/getOfflineToken.js';
 const userRoutes = Router();
 
 userRoutes.get("/", (req, res) => {
