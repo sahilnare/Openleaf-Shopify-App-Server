@@ -47,7 +47,7 @@ const authMiddleware = (app) => {
 			return await shopify.auth.begin({
 			shop: req.query.shop,
 			callbackPath: "/api/auth/tokens",
-			isOnline: true,
+			isOnline: false,
 			rawRequest: req,
 			rawResponse: res,
 			});
@@ -72,7 +72,10 @@ const authMiddleware = (app) => {
 
   app.get("/api/auth/tokens", async (req, res) => {
     console.log('/api/auth/tokens query => ', req?.query);
-    console.log('/api/auth/tokens headesr => ', req.headers)
+    console.log('/api/auth/tokens header => ', req.headers)
+
+	console.log(shopify.config);
+
     try {
       const callbackResponse = await shopify.auth.callback({
         rawRequest: req,
@@ -82,7 +85,7 @@ const authMiddleware = (app) => {
 	    console.log("This is /api/auth/tokens");
 
       const { session } = callbackResponse;
-
+	  
       // * Experimental => Getting access token using shopifyApi => auth.tokenExchange
       try {
         
@@ -93,7 +96,7 @@ const authMiddleware = (app) => {
         // const sessionToken = session.accessToken;
         // console.log('sessionTk', sessionToken)
 
-        const encodedSessionToken = getSessionTokenHeader(req) || getSessionTokenFromUrlParam(req) || req.query.code;
+        const encodedSessionToken = getSessionTokenHeader(req) || getSessionTokenFromUrlParam(req);
 
         console.log(encodedSessionToken);
         
@@ -215,7 +218,7 @@ const authMiddleware = (app) => {
       return await shopify.auth.begin({
         shop: session.shop,
         callbackPath: "/api/auth/callback",
-        isOnline: true,
+        isOnline: false,
         rawRequest: req,
         rawResponse: res,
       });

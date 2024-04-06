@@ -34,6 +34,11 @@ mongoose.connect(mongoUrl);
 
 const createServer = async (root = process.cwd()) => {
   const app = Express();
+
+  app.use(Express.json());
+
+  app.use(Express.urlencoded({ extended: false }));
+
   app.disable("x-powered-by");
 
   applyAuthMiddleware(app);
@@ -65,12 +70,10 @@ const createServer = async (root = process.cwd()) => {
     }
   );
 
-  app.use(Express.json());
-
   app.post("/api/graphql", verifyRequest, async (req, res) => {
     try {
       const sessionId = await shopify.session.getCurrentId({
-        isOnline: true,
+        isOnline: false,
         rawRequest: req,
         rawResponse: res,
       });
