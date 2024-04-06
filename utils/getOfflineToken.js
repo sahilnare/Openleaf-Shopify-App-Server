@@ -1,4 +1,4 @@
-import shopify from './shopify';
+import shopify from './shopify.js';
 
 function getSessionTokenHeader(request) {
 	return request.headers['authorization']?.replace('Bearer ', '');
