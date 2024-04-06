@@ -251,6 +251,12 @@ const authMiddleware = (app) => {
 	  console.log("This is /api/auth/callback");
 
       const { session } = callbackResponse;
+
+	  
+	  console.log("/api/auth/callback header => ", req.headers)
+	  console.log("/api/auth/callback session => ", session)
+	  
+
       await sessionHandler.storeSession(session);
 
       const host = req.query.host;
