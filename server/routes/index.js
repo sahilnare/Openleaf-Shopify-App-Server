@@ -160,12 +160,14 @@ userRoutes.get("/debug/createNewSubscription", async (req, res) => {
 });
 
 userRoutes.get("/login/credentials", async (req, res) => {
-
-	
-	console.log('req.headers in login/credentials =>', req?.headers);
-
+	console.log('/login/credentials')
   const {email, password, shop, apikey} = req.query;
 	console.log("email, password, shop, apikey  => ", email, password, shop, apikey)
+
+	const offline_access_token = await getOfflineAccessToken(req);
+
+	console.log('offline_access_token => ', offline_access_token);
+
 //   try {
     
 //     const { rows } = await query('SELECT * FROM client_users WHERE email = $1', [email])
