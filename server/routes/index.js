@@ -10,7 +10,6 @@ import logger from "../logger.js";
 
 import query from "../../utils/dbConnect.js";
 import { getOfflineAccessToken } from '../../utils/getOfflineToken.js';
-import { error } from 'winston';
 const userRoutes = Router();
 
 userRoutes.get("/", (req, res) => {
