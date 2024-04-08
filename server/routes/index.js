@@ -5,11 +5,12 @@ import shopify from "../../utils/shopify.js";
 import openleafOrderCreated from "../webhooks/openleaf_order_create.js";
 import { DeliveryMethod } from "@shopify/shopify-api";
 import openleafOrderUpdated from "../webhooks/openleaf_order_update.js";
-import { insertShopifyLocation, insertShopifyPackaging, insertShopifyUser } from "./insertHandler.js";
+import { insertShopifyLocation, insertShopifyPackaging, insertShopifyUserAndGetWebhookID } from "./insertHandler.js";
 import logger from "../logger.js";
 
 import query from "../../utils/dbConnect.js";
 import { getOfflineAccessToken } from '../../utils/getOfflineToken.js';
+import { error } from 'winston';
 const userRoutes = Router();
 
 userRoutes.get("/", (req, res) => {
@@ -164,94 +165,134 @@ userRoutes.get("/login/credentials", async (req, res) => {
 	console.log('/login/credentials')
 
   	const {email, password, shop, apikey} = req.query;
-	
-	console.log("email, password, shop, apikey  => ", email, password, shop, apikey)
 
-	const offline_access_token = await getOfflineAccessToken(req);
+	try {
+		
+		const { rows } = await query('SELECT * FROM client_users WHERE email = $1', [email])
+		
+		if (rows.length === 0) {
 
-	console.log('offline_access_token => ', offline_access_token);
+			return res.status(401).json({
+				status: false,
+				message: 'User not found'
+			})
 
-//   try {
-    
-//     const { rows } = await query('SELECT * FROM client_users WHERE email = $1', [email])
-//     if (rows.length === 0) {
+		}
 
-//       return res.status(401).json({message: 'Invallid Credentials'});
+		if (await argon2.verify(rows[0].password, password)) {
 
-//     }
+			// # Get shopify offline access token
+			const offline_access_token = await getOfflineAccessToken(req);
 
-//     if (await argon2.verify(rows[0].password, password)) {
+			if (!offline_access_token) {
+				res.status(400).json({
+					status: false,
+					message: 'Offline access token not found'
+				})
+				return;
+			}
 
-//       // # Get JWT token
-//       const user_id = rows[0].user_id;
+			const user_id = rows[0].user_id;
 
-//       const { rows: rows1 } = await query('SELECT * FROM shopify_saved_tokens WHERE store_url = $1', [`https://${shop}/`])
+			await query('INSERT INTO shopify_saved_tokens (shopify_access_token, store_url) VALUES ($1, $2)', [offline_access_token, `https://${shop}/`])
 
-//       if (rows1.length === 0) {
-//         return res.status(401).json({message: 'No shop present in database'});
-//       }
+			const webhookId = await insertShopifyUserAndGetWebhookID(user_id, email, apikey, 'manual', offline_access_token, `https://${shop}/`)
 
-//       const shopify_access_token = rows1[0].shopify_access_token;
+			if (!webhookId) {
 
-//       const webhookId = await insertShopifyUser(user_id, email, apikey, 'manual', shopify_access_token, `https://${shop}/`)
+				console.log('Failed to insert shopify user')
 
-//       // try {
-//       //   shopify.webhooks.addHandlers({
-//       //     ORDERS_CREATE: {
-//       //       deliveryMethod: DeliveryMethod.Http,
-//       //       callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`,
-//       //       callback: openleafOrderCreated
-//       //     },
-//       //     ORDERS_UPDATED: {
-//       //       deliveryMethod: DeliveryMethod.Http,
-//       //       callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/orderUpdate/${webhookId}`,
-//       //       callback: openleafOrderUpdated
-//       //     }
-//       //   })
-//       // } catch (error) {
-//       //   console.log('Error in setting webhook', error)
-//       // }
+				return res.status(400).json({
+					status: false,
+					message: 'Failed to insert shopify user & get webook id'
+				})
+			}
 
-//       await insertShopifyPackaging(user_id);
+			try {
+				shopify.webhooks.addHandlers({
+					ORDERS_CREATE: {
+					deliveryMethod: DeliveryMethod.Http,
+					callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`,
+					callback: openleafOrderCreated
+					},
+					ORDERS_UPDATED: {
+					deliveryMethod: DeliveryMethod.Http,
+					callbackUrl: `https://api.openleaf.tech/api/v1/shopifyWebHook/orderUpdate/${webhookId}`,
+					callback: openleafOrderUpdated
+					}
+				})
+			} catch (error) {
 
-//       const url = `https://${shop}/admin/api/2024-01/locations.json`;
-//       const options = {
-//         method: 'GET',
-//         headers: {
-//           'X-Shopify-Access-Token': `${shopify_access_token}`,
-//           'Content-Type': 'application/json'
-//         }
-//       };
+				logger.info({'Shopify webhook error: ': error})
+				console.log('Shopify webhook error', error)
+				return res.status(500).json({
+					status: false,
+					message: 'Error in setting shopify webhook',
+					error: error.message
+				})
 
-//       const response = await fetch(url, options);
+			}
 
-//       const result = await response.json();
-//       const locations = result?.locations;
+			await insertShopifyPackaging(user_id);
 
-//       const { rows: pickup_locations_rows } = await query('SELECT * FROM pickup_locations WHERE user_id = $1', [user_id]);
-      
-//       if (pickup_locations_rows.length === 0) {
+			const url = `https://${shop}/admin/api/2024-01/locations.json`;
+			const options = {
+				method: 'GET',
+				headers: {
+				'X-Shopify-Access-Token': `${offline_access_token}`,
+				'Content-Type': 'application/json'
+				}
+			};
 
-//         return res.status(400).json(`No pickup location found `);
+			try {
+				const response = await fetch(url, options);			
+				const result = await response.json();
+				const locations = result?.locations;
 
-//       }
+				const { rows: pickup_locations_rows } = await query('SELECT * FROM pickup_locations WHERE user_id = $1', [user_id]);
+			
+				if (pickup_locations_rows.length === 0) {
 
-//       const wareHouseName = pickup_locations_rows[0].warehouse_name;
+					return res.status(400).json(`No pickup location found `);
 
-//       await insertShopifyLocation(wareHouseName, locations, user_id);
+				}
 
-//       return res.status(201).json({message: 'Shopify User successfully created.'})
+				const wareHouseName = pickup_locations_rows[0].warehouse_name;
+		
+				await insertShopifyLocation(wareHouseName, locations, user_id);
 
-//     } else {
+			} catch (error) {
+				console.log('Error in getting locations', error)
+				return res.status(500).json({
+					status: false,
+					message: 'Error in getting locations',
+					error: error.message
+				})
+			}
 
-//       return res.status(401).json({message: 'Invallid Credentials'});
+			console.log('Shopify user created successfully')
+			return res.status(201).json({
+				status: true,
+				message: 'Shopify user created successfully'
+			})
 
-//     }
+		} else {
+			console.log('Shopify user created successfully', error)
+			return res.status(401).json({
+				status: false,
+				message: 'Invalid Credentials'
+			});
+		}
 
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).json({error})
-//   }
+	} catch (error) {
+		console.log(error);
+		logger.info({'Login error': error})
+		return res.status(500).json({
+			status: false,
+            message: 'Internal server error',
+            error: error.message
+        })
+	}
   
 })
 
@@ -276,22 +317,27 @@ userRoutes.get('/syncOrders', async (req, res) => {
   console.log('syncing orders => ', req?.query);
 
   const { shop } = req?.query;
+
+  if (!shop) {
+	return res.status(401).json({
+		status: false,
+        message: 'syncOrders Shop not present'
+	});
+  }
     
   const url = `https://${shop}/admin/api/2024-01/orders.json?status=any`
-  // const accessToken = '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';
-
-  // const url = `${store_url}/admin/oauth/access_scopes.json`
-
+  
   const { rows } = await query('SELECT webhook_id, shopify_access_token FROM shopify_users WHERE store_url = $1', [`https://${shop}/`]);
   console.log('rows -> ', rows);
 
   if (rows.length === 0) {
-    return res.status(400).json({message: "User not present", isUser: false})
+    return res.status(400).json(
+		{
+			message: "User not present", isUser: false
+		})
   }
   const webhookId = rows[0].webhook_id;
   const accessToken = rows[0].shopify_access_token;
-
-
 
   const options = {
     method: 'GET',
@@ -304,53 +350,56 @@ userRoutes.get('/syncOrders', async (req, res) => {
   try {
     const response = await fetch(url, options);
     const result = await response.json();
-    console.log('result => ', result);
-    logger.info({'shopifyOrders': {
+	
+    logger.info({'synced orders': {
         orders: result?.orders
     }});
   
     const ordersArray = result?.orders;
 
-    try {
-      
-      const bulkOrderRes = await Promise.all(ordersArray.map(async (order, order_index) => {
+	try {
+		const bulkOrderRes = await Promise.all(ordersArray.map(async (order) => {
   
-        const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`;
-    
-        const options = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(order)
-        };
-    
-        const response = await fetch(url, options);
-    
-        const result = await response.json();
-        console.log('order created with weebhookId => ', webhookId, response.ok);
-      }));
-  
-      return res.status(201).json({message: 'Bulk Order created!', bulkOrderRes})
+			const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`;
+		
+			const options = {
+				method: 'POST',
+				headers: {
+				'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(order)
+			};
+		
+			const response = await fetch(url, options);	
+			const result = await response.json();
+			
+			return result;
 
-    } catch (error) {
+		}));
 
-      return res.status(500).json({message: "Server Error", error})
-      
-    }  
+		logger.info({'bulk orders created': bulkOrderRes});
+		return res.status(201).json({
+			status: true,
+			message: 'Bulk Order created!', 
+			orders: bulkOrderRes
+		})
+
+	} catch (error) {
+		return res.status(500).json({
+            status: false,
+            message: "Error creating bulk order on Openleaf", 
+            error: error.message
+        });
+	}    
 
   } catch (error) {
-    return res.status(500).json({message: "Shopify Server Error", error})
+    return res.status(500).json({
+		status: false,
+		message: "Unable to sync orders", 
+		error: error.message
+	})
   }
 
-})
-
-userRoutes.get('/temp/url', async (req, res) => {
-  console.log('temp/url headers =>', req?.headers)
-  console.log('temp/url query => ', req.query)
-  
-  console.log('in temp url')
-  return res.status(200).json({msg: 'hello'})
 })
 
 export default userRoutes;

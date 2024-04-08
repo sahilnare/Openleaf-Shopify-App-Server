@@ -1,6 +1,6 @@
 import query from "../../utils/dbConnect.js";
 
-export const insertShopifyUser = async (user_id, email, shopifyApiKey, shippingMode, shopifyAccessToken, shopUrl) => {
+export const insertShopifyUserAndGetWebhookID = async (user_id, email, shopifyApiKey, shippingMode, shopifyAccessToken, shopUrl) => {
 
     try {
         console.log(user_id, email, shopifyAccessToken, shopifyApiKey, shippingMode, shopUrl);
