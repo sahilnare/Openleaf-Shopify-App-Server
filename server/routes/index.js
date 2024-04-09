@@ -171,6 +171,45 @@ userRoutes.get("/login/credentials", async (req, res) => {
     const offline_access_token = await getOfflineAccessToken(req);
 
     console.log('offline_access_token => ', offline_access_token);
+
+    // * Registering Location Create webhook;
+    const headers = {
+      'X-Shopify-Access-Token': offline_access_token,
+      'Content-Type': 'application/json'
+    }
+
+    // const data = {
+    //   "id": 866550311766439020,
+    //   "name": "Example Shop",
+    //   "address1": "34 Example Street",
+    //   "address2": "Next to example",
+    //   "city": "ottawa",
+    //   "zip": "k1n5t5",
+    //   "province": "ontario",
+    //   "country": "CA",
+    //   "phone": "555-555-5555",
+    //   "created_at": "2021-12-31T19:00:00-05:00",
+    //   "updated_at": "2021-12-31T19:00:00-05:00",
+    //   "country_code": "CA",
+    //   "country_name": "Canada",
+    //   "province_code": "ON",
+    //   "legacy": false,
+    //   "active": true,
+    //   "admin_graphql_api_id": "gid:\/\/shopify\/Location\/866550311766439020"
+    // }
+
+    const postData = {"webhook":{"address":"https://api.openleaf.tech/api/v1/shopifyWebHook/order/ac3f220b-ba26-4427-9182-3bfd8f464225","topic":"locations/create","format":"json"}}
+
+    const url = `https://${req.query.shop}.myshopify.com/admin/api/2024-01/webhooks.json`
+
+    const response = await fetch(url, {
+      headers: headers,
+      method: "POST",
+      body: JSON.stringify(postData)
+    })
+
+    const result = await response.json();
+    console.log(result);
     
   } catch (error) {
     

@@ -129,52 +129,7 @@ const authMiddleware = (app) => {
       //   console.log('Token exchange Rest API error => ', error)
       // }
 
-      // * GitHub Testing
-      // const code = req.query.code;
-      // console.log('api key ', process.env.SHOPIFY_API_KEY, process.env.SHOPIFY_API_SECRET);
-      // try {
-      //   const { query } = req;
-      //   const { code, hmac, shop } = query;
-
-      //   const map = JSON.parse(JSON.stringify(query));
-      //   delete map['signature'];
-      //   delete map['hmac'];
-
-      //   const message = querystring.stringify(map);
-      //   const generated_hash = crypto
-      //     .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
-      //     .update(message)
-      //     .digest('hex');
-
-      //   if (generated_hash !== hmac) {
-      //     return response.status(400).send('HMAC validation failed');
-      //   }
-
-      //   if (shop == null) {
-      //     return response.status(400).send('Expected a shop query parameter');
-      //   }
-
-      //   const requestBody = querystring.stringify({
-      //     code,
-      //     client_id: process.env.SHOPIFY_API_KEY,
-      //     client_secret: process.env.SHOPIFY_API_SECRET,
-      //   });
-
-      //   const remoteResponse = await fetch(`https://${shop}/admin/oauth/access_token`, {
-      //     method: 'POST',
-      //     headers: {
-      //       'Content-Type': 'application/x-www-form-urlencoded',
-      //       'Content-Length': Buffer.byteLength(requestBody),
-      //     },
-      //     body: requestBody,
-      //   });
-
-      //   const responseBody = await remoteResponse.json();
-      //   const accessToken = responseBody.access_token;
-      //   console.log('AccessToken', accessToken);
-      // } catch (error) {
-      //   console.log('Rest api error =>', error)
-      // }
+      
 
       await sessionHandler.storeSession(session);
       
