@@ -4,6 +4,9 @@ import appUninstallHandler from "../server/webhooks/app_uninstalled.js";
 // import orderCreatedHandler from "../server/webhooks/order_created.js";
 import openleafOrderCreated from "../server/webhooks/openleaf_order_create.js";
 
+import openleafLocationUpdate from "../server/webhooks/location_update.js";
+import openleafLocationCreate from '../server/webhooks/openleaf_location_create.js';
+
 const isDev = process.env.NODE_ENV === "dev";
 
 // Setup Shopify configuration
@@ -23,12 +26,22 @@ shopify.webhooks.addHandlers({
     deliveryMethod: DeliveryMethod.Http,
     callbackUrl: "/api/webhooks/app_uninstalled",
     callback: appUninstallHandler,
-  }
+  },
   // ORDERS_CREATE: {
   //   deliveryMethod: DeliveryMethod.Http,
   //   callbackUrl: "/api/webhooks/order_created",
   //   callback: orderCreatedHandler,
   // },
+  LOCATIONS_CREATE: {
+    deliveryMethod: DeliveryMethod.Http,
+    callbackUrl: 'https://shopifyapp.openleaf.tech/api/webhooks/location_create',
+    callback: openleafLocationCreate
+  },
+  LOCATIONS_UPDATE: {
+    deliveryMethod: DeliveryMethod.Http,
+    callbackUrl: 'https://shopifyapp.openleaf.tech/api/webhooks/location_create',
+    callback: openleafLocationUpdate
+  }
 });
 
 export default shopify;
