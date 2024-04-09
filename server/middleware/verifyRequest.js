@@ -13,12 +13,16 @@ const verifyRequest = async (req, res, next) => {
   try {
     let { shop } = req.query;
     const sessionId = await shopify.session.getCurrentId({
-      isOnline: true,
+      isOnline: false, // was true initially
       rawRequest: req,
       rawResponse: res,
     });
 
+    console.log('SessionId =>', sessionId)
+
     const session = await sessionHandler.loadSession(sessionId);
+
+    console.log('session =>', session);
 
     if (
       new Date(session?.expires) > new Date() &&

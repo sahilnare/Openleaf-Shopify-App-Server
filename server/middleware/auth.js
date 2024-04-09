@@ -36,7 +36,7 @@ const authMiddleware = (app) => {
 			return await shopify.auth.begin({
 			shop: req.query.shop,
 			callbackPath: "/api/auth/tokens",
-			isOnline: true,
+			isOnline: false,
 			rawRequest: req,
 			rawResponse: res,
 			});
