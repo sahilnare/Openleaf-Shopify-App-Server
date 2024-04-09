@@ -13,7 +13,7 @@ const verifyRequest = async (req, res, next) => {
   try {
     let { shop } = req.query;
     const sessionId = await shopify.session.getCurrentId({
-      isOnline: false, // was true initially
+      isOnline: true, // was true initially
       rawRequest: req,
       rawResponse: res,
     });
