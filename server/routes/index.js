@@ -3,8 +3,10 @@ import clientProvider from "../../utils/clientProvider.js";
 import argon2 from 'argon2'
 import shopify from "../../utils/shopify.js";
 import openleafOrderCreated from "../webhooks/openleaf_order_create.js";
-import { DeliveryMethod } from "@shopify/shopify-api";
 import openleafOrderUpdated from "../webhooks/openleaf_order_update.js";
+import openleafLocationUpdate from "../webhooks/location_update.js";
+import openleafLocationCreate from '../webhooks/openleaf_location_create.js';
+import { DeliveryMethod } from "@shopify/shopify-api";
 import { insertShopifyLocation, insertShopifyPackaging, insertShopifyUser } from "./insertHandler.js";
 import logger from "../logger.js";
 
@@ -202,14 +204,31 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
     const url = `https://${req.query.shop}/admin/api/2024-01/webhooks.json`
 
-    const response = await fetch(url, {
-      headers: headers,
-      method: "POST",
-      body: JSON.stringify(postData)
-    })
+    // const response = await fetch(url, {
+    //   headers: headers,
+    //   method: "POST",
+    //   body: JSON.stringify(postData)
+    // })
 
-    const result = await response.json();
-    console.log(result);
+    // const result = await response.json();
+    // console.log(result);
+
+      try {
+        shopify.webhooks.addHandlers({
+          LOCATIONS_CREATE: {
+            deliveryMethod: DeliveryMethod.Http,
+            callbackUrl: 'https://shopifyapp.openleaf.tech/api/webhooks/location_create',
+            callback: openleafLocationCreate
+          },
+          LOCATIONS_UPDATE: {
+            deliveryMethod: DeliveryMethod.Http,
+            callbackUrl: 'https://shopifyapp.openleaf.tech/api/webhooks/location_create',
+            callback: openleafLocationUpdate
+          }
+        })
+      } catch (error) {
+        console.log('Error in setting webhook', error)
+      }
     
   } catch (error) {
     
