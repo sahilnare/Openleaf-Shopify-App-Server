@@ -167,9 +167,16 @@ userRoutes.get("/login/credentials", async (req, res) => {
 	
 	console.log("email, password, shop, apikey  => ", email, password, shop, apikey)
 
-	const offline_access_token = await getOfflineAccessToken(req);
+	try {
+    const offline_access_token = await getOfflineAccessToken(req);
 
-	console.log('offline_access_token => ', offline_access_token);
+    console.log('offline_access_token => ', offline_access_token);
+    
+  } catch (error) {
+    
+    console.log('Token exchange error => ', error)
+    
+  }
 
 //   try {
     
