@@ -198,7 +198,7 @@ userRoutes.get("/login/credentials", async (req, res) => {
     //   "admin_graphql_api_id": "gid:\/\/shopify\/Location\/866550311766439020"
     // }
 
-    const postData = {"webhook":{"address":"https://api.openleaf.tech","topic":"locations/create","format":"json"}}
+    const postData = {"webhook":{"address":"/api/webhooks/location_create","topic":"locations/create","format":"json"}}
 
     const url = `https://${req.query.shop}/admin/api/2024-01/webhooks.json`
 
