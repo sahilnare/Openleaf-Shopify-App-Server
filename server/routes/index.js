@@ -200,7 +200,7 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
     const postData = {"webhook":{"address":"https://api.openleaf.tech/api/v1/shopifyWebHook/order/ac3f220b-ba26-4427-9182-3bfd8f464225","topic":"locations/create","format":"json"}}
 
-    const url = `https://${req.query.shop}.myshopify.com/admin/api/2024-01/webhooks.json`
+    const url = `https://${req.query.shop}/admin/api/2024-01/webhooks.json`
 
     const response = await fetch(url, {
       headers: headers,
