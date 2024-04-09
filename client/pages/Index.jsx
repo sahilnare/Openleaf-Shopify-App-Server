@@ -1,5 +1,4 @@
 import { Form, FormLayout, TextField, Button, Text, Card } from "@shopify/polaris";
-import { useNavigate } from "raviger";
 import { useEffect, useState, useCallback } from "react";
 import "./index.css";
 
@@ -13,14 +12,16 @@ const HomePage = () => {
   const [isUserLogin, setIsUserLogin] = useState(false)
   const [loader, setLoader] = useState(true)
 
-  const navigate = useNavigate();
-
   const checkLogin = async (shop_url) => {
-    const res = await fetch(`/api/apps/islogin?shop=${shop_url}`);
-    const result = await res.json();
-    if (res.ok) {
-      setErrorMessage(result.message);
-      setIsUserLogin(true);
+    try {
+      const res = await fetch(`/api/apps/islogin?shop=${shop_url}`);
+      const result = await res.json();
+      if (res.ok) {
+        setErrorMessage(result.message);
+        setIsUserLogin(true);
+      }
+    } catch (error) {
+      console.log(error);
     }
     setLoader(false);
   }
@@ -36,16 +37,6 @@ const HomePage = () => {
       setErrorMessage(result.message);
     }
     setLoader(false);
-  }
-
-  const testing = async () => {
-    const res = await fetch(`/api/apps/temp/url`)
-    const result = await res.json();
-
-    if (res.ok) {
-      console.log(result);
-    } 
-    console.log(res);
   }
   
   const syncOrders = async () => {
@@ -114,8 +105,6 @@ const HomePage = () => {
           <div className='card-sync-btn'>
             <Button primary onClick={submitSync}>Sync</Button>
           </div>
-
-          <Button secondary onClick={testing}>Testing</Button>
         </Card>
       </div>
     )
