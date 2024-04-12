@@ -1,5 +1,6 @@
 import SessionModel from "../../utils/models/SessionModel.js";
 import StoreModel from "../../utils/models/StoreModel.js";
+import query from "../../utils/dbConnect.js";
 
 /**
  * @typedef { import("../../_developer/types/2024-01/webhooks.js").ORDERS_CREATE } webhookTopic
