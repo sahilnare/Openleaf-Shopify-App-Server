@@ -1,7 +1,7 @@
 import { DeliveryMethod, shopifyApi } from "@shopify/shopify-api";
 import "dotenv/config";
 import appUninstallHandler from "../server/webhooks/app_uninstalled.js";
-// import orderCreatedHandler from "../server/webhooks/order_created.js";
+import orderCreatedHandler from "../server/webhooks/order_created.js";
 import openleafOrderCreated from "../server/webhooks/openleaf_order_create.js";
 
 import openleafLocationUpdate from "../server/webhooks/location_update.js";
