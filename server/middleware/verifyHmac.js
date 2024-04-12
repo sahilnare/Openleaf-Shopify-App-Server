@@ -1,8 +1,10 @@
 import crypto from "crypto";
 import shopify from "../../utils/shopify.js";
+import logger from "../logger.js";
 
 const verifyHmac = (req, res, next) => {
   try {
+    
     const generateHash = crypto
       .createHmac("SHA256", process.env.SHOPIFY_API_SECRET)
       .update(JSON.stringify(req.body), "utf8")
@@ -14,9 +16,12 @@ const verifyHmac = (req, res, next) => {
     } else {
       return res.status(401).send();
     }
+
   } catch (e) {
-    console.log(e);
+
+    logger.error({'Error ini verify Hmac =>': e});
     return res.status(401).send();
+
   }
 };
 

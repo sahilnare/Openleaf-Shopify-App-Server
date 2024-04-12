@@ -1,4 +1,4 @@
-import { Form, FormLayout, TextField, Button, Text, Card } from "@shopify/polaris";
+import { Form, FormLayout, TextField, Button, Text, Card, Spinner } from "@shopify/polaris";
 import { useEffect, useState, useCallback } from "react";
 import "./index.css";
 
@@ -13,6 +13,7 @@ const HomePage = () => {
   const [loader, setLoader] = useState(true)
 
   const checkLogin = async (shop_url) => {
+    setLoader(true)
     try {
       const res = await fetch(`/api/apps/islogin?shop=${shop_url}`);
       const result = await res.json();
@@ -39,10 +40,10 @@ const HomePage = () => {
     setLoader(false);
   }
   
-  const syncOrders = async () => {
+  const syncOrders = async () => {  
+    setLoader(true)
     try {
 
-      setLoader(true)
       const res = await fetch(`/api/apps/syncOrders?shop=${shopUrl}`);
       const result = await res.json();
       if (res.ok) {
@@ -50,11 +51,11 @@ const HomePage = () => {
       } else {
         setErrorMessage(result.message);
       }
-      setLoader(false);
       
     } catch (error) {
       console.log(error);
     }
+    setLoader(false);
   }
 
   const submitSync = () => {
@@ -149,7 +150,7 @@ const HomePage = () => {
           </div>
           <FormLayout>
             <Button primary onClick={submitForm}>
-              {loader ? 'Loading...' : 'Log In'}
+              {loader ? <Spinner accessibilityLabel="Spinner example" size="small" /> : 'Log In'}
             </Button>
           </FormLayout>
         </FormLayout>

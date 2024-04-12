@@ -1,5 +1,4 @@
-import SessionModel from "../../utils/models/SessionModel.js";
-import StoreModel from "../../utils/models/StoreModel.js";
+import logger from "../logger.js";
 import query from "../../utils/dbConnect.js";
 
 /**
@@ -19,7 +18,7 @@ const openleafOrderCreated = async (
 
   if (rows.length !== 0) {
 
-    const webhookId = rows.webhook_id;
+    const webhookId = rows[0].webhook_id;
 
     const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`
 
@@ -27,22 +26,25 @@ const openleafOrderCreated = async (
       
       const response = await fetch(url, {
         method: 'POST',
-        body: webhookRequestBody
+        body: webhookRequestBody,
+        headers: {
+          'Content-Type': 'application/json'
+        }
       })
 
     } catch (error) {
 
-      console.log('Error in server =>', error);
+      logger.error({ 'Openleaf Server Error:': { error }})
       
     }
 
     // return res.status(200).json({message: "Order Created"})
-    console.log('Order Created')
+    logger.info({ 'Order Created in shop: ': shop })
 
   } else {
 
     // return res.status(200).json({message: "User not present with this shop"})
-    console.log(`User not present with this shop: ${shop}`)
+    logger.info({ 'User not present with this shop': shop })
 
   }
 

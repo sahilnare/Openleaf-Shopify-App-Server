@@ -1,5 +1,6 @@
 import sessionHandler from "../../utils/sessionHandler.js";
 import shopify from "../../utils/shopify.js";
+import logger from "../logger.js";
 
 const TEST_QUERY = `
 {
@@ -9,7 +10,7 @@ const TEST_QUERY = `
 }`;
 
 const verifyRequest = async (req, res, next) => {
-  console.log("verifyRequest => ", req?.headers);
+
   try {
     let { shop } = req.query;
     const sessionId = await shopify.session.getCurrentId({
@@ -18,15 +19,10 @@ const verifyRequest = async (req, res, next) => {
       rawResponse: res,
     });
 
-    console.log('SessionId =>', sessionId)
-
     const session = await sessionHandler.loadSession(sessionId);
 
-    console.log('session =>', session);
-
     if (
-      new Date(session?.expires) > new Date() &&
-      shopify.config.scopes.equals(session.scope)
+      new Date(session?.expires) > new Date() && shopify.config.scopes.equals(session.scope)
     ) {
       const client = new shopify.clients.Graphql({ session });
       await client.request(TEST_QUERY);
@@ -39,7 +35,9 @@ const verifyRequest = async (req, res, next) => {
     }
 
     const authBearer = req.headers.authorization?.match(/Bearer (.*)/);
+
     if (authBearer) {
+
       if (!shop) {
         if (session) {
           shop = session.shop;
@@ -52,22 +50,28 @@ const verifyRequest = async (req, res, next) => {
           }
         }
       }
+
       res
         .status(403)
         .setHeader("Verify-Request-Failure", "1")
         .setHeader("Verify-Request-Reauth-URL", `/exitframe/${shop}`)
         .end();
+
     } else {
+
       res
         .status(403)
         .setHeader("Verify-Request-Failure", "1")
         .setHeader("Verify-Request-Reauth-URL", `/exitframe/${shop}`)
         .end();
       return;
+
     }
   } catch (e) {
-    console.error(e);
+
+    logger.error({'Error in verifyRequest: ': e});
     return res.status(401).send({ error: "Nah I ain't serving this request" });
+    
   }
 };
 

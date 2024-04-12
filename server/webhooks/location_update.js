@@ -15,12 +15,7 @@ const openleafOrderCreated = async (
   /** @type {webhookTopic} */
   const webhookBody = JSON.parse(webhookRequestBody);
 
-  console.log("Location webhook is created!!!!!");
-  console.log("Here is the order body:");
-  console.log(webhookRequestBody);
-  console.log('webhook info => ', topic, shop, webhookId, apiVersion);
-//   await StoreModel.findOneAndUpdate({ shop }, { isActive: false });
-//   await SessionModel.deleteMany({ shop });
+  logger.info({'new location is created with shop =>': shop, body: webhookBody})
 };
 
 export default openleafOrderCreated;

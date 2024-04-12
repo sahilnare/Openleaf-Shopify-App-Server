@@ -28,8 +28,6 @@ const query = (text, params) => {
 
 	if (!global.db.pool) {
 
-		// console.log("No pool available, creating new pool.");
-
 		global.db.pool = new Pool({
 			user: process.env.PGUSER,
 			host: process.env.PGHOST,
@@ -46,15 +44,7 @@ const query = (text, params) => {
 	
 		});
 	
-		// global.db.pool.on('connect', () => {
-	
-		// 	console.log('Connected to Postgres');
-	
-		// });
-	
 	}
-
-	// console.log(global.db.pool.idleCount);
 
 	return global.db.pool.query(text, params);
 

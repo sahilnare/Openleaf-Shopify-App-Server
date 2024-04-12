@@ -12,37 +12,46 @@ import shopify from "../../utils/shopify.js";
 import { crypto } from "@shopify/shopify-api/runtime";
 import querystring from 'querystring';
 import query from "../../utils/dbConnect.js";
+import logger from "../logger.js";
 
 const authMiddleware = (app) => {
 
   app.get("/api/auth", async (req, res) => {
-    console.log('/api/auth/ ');
+
+    req?.query?.shop && console.log(`${req.query.shop} tried to install openleaf shopify app`)
+
 		try {
 			if (!req.query.shop) {
-			return res.status(500).send("No shop provided");
+
+			  return res.status(500).send("No shop provided");
+
 			}
 
 			if (req.query.embedded === "1") {
-			const shop = shopify.utils.sanitizeShop(req.query.shop);
-			const queryParams = new URLSearchParams({
-				...req.query,
-				shop,
-				redirectUri: `https://${shopify.config.hostName}/api/auth?shop=${shop}`,
-			}).toString();
 
-			return res.redirect(`/exitframe?${queryParams}`);
+        const shop = shopify.utils.sanitizeShop(req.query.shop);
+        const queryParams = new URLSearchParams({
+          ...req.query,
+          shop,
+          redirectUri: `https://${shopify.config.hostName}/api/auth?shop=${shop}`,
+        }).toString();
+
+        return res.redirect(`/exitframe?${queryParams}`);
+
 			}
 
 			return await shopify.auth.begin({
-			shop: req.query.shop,
-			callbackPath: "/api/auth/tokens",
-			isOnline: false,
-			rawRequest: req,
-			rawResponse: res,
+        shop: req.query.shop,
+        callbackPath: "/api/auth/tokens",
+        isOnline: false,
+        rawRequest: req,
+        rawResponse: res,
 			});
+
 		} catch (e) {
-			console.error(`---> Error at /api/auth`, e);
-			const { shop } = req.query;
+
+      const { shop } = req.query;
+			logger.error({'Error at /api/auth': `shop: ${shop}`, error: e});
 			switch (true) {
 			case e instanceof CookieNotFound:
 			case e instanceof InvalidOAuthError:
@@ -60,7 +69,7 @@ const authMiddleware = (app) => {
 	});
 
   app.get("/api/auth/tokens", async (req, res) => {
-    console.log('/api/auth/tokens');
+
     try {
       const callbackResponse = await shopify.auth.callback({
         rawRequest: req,
@@ -68,73 +77,15 @@ const authMiddleware = (app) => {
       });
 
       const { session } = callbackResponse;
-
-      try {
-        // const adminApiAccessToken = await shopify.config.adminApiAccessToken();
-        const apiKey = shopify.config.apiKey
-        const secretKey = shopify.config.apiSecretKey;
-        const a = shopify.config.privateAppStorefrontAccessToken;
-        console.log('Values => ', apiKey, secretKey, a);
-      } catch (error) {
-        console.log(error);
-      }
-
-      // * Experimental => Getting access token using shopifyApi => auth.tokenExchange
-    //   try {
-        
-    //     const shop = shopify.utils.sanitizeShop(session.shop, true)
-
-    //     // const encodedSessionToken = getSessionTokenHeader(req) || getSessionTokenFromUrlParam(req) ||adminApiAccessToken || session.accessToken;
-
-    //     // console.log(encodedSessionToken);
-        
-    //     const tknExchange = await shopify.auth.tokenExchange({
-    //       sessionToken: encodedSessionToken,
-    //       shop,
-    //       requestedTokenType: RequestedTokenType.OfflineAccessToken
-    //     });
-
-    //     console.log('token exchange => ',tknExchange)
-
-    //   } catch (error) {
-    //     console.log('token exchange error => ', error)
-    //   }
-
-
-      // * Experimental => Token exchange from Rest API => https://{shop}.myshopify.com/admin/oauth/access_token
-      // try {
-      //   const tknExchangeUrl = `https://${req.query.shop}/admin/oauth/access_token`;
-        
-      //   // const jwtToken = await shopify.session.decodeSessionToken(session.accessToken);
-      //   // console.log('jwtToken', jwtToken)
-
-      //   const response = await fetch(tknExchangeUrl, {
-      //     method: "POST",
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //       'Accept': 'application/json'
-      //     },
-      //     body: JSON.stringify({
-      //       client_id: process.env.SHOPIFY_API_KEY,
-      //       client_secret: process.env.SHOPIFY_API_SECRET,
-      //       grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
-      //       subject_token: req.query.code,
-      //       subject_token_type: "urn:ietf:params:oauth:token-type:id_token",
-      //       requested_token_type: "urn:shopify:params:oauth:token-type:offline-access-token"
-      //     })
-      //   })
-      //   const result = await response.json();
-      //   console.log('Token exchange Rest API result => ', result);
-      // } catch (error) {
-      //   console.log('Token exchange Rest API error => ', error)
-      // }
-
       
+      console.log(`${req.query.shop} install openleaf shopify app`)
 
       await sessionHandler.storeSession(session);
       
       try {
-          const {rows} = await query('SELECT * FROM shopify_saved_tokens WHERE store_url = $1', [`https://${session.shop}/`])
+
+        const {rows} = await query('SELECT * FROM shopify_saved_tokens WHERE store_url = $1', [`https://${session.shop}/`])
+
         if (rows.length === 0) {
 
           await query('INSERT INTO shopify_saved_tokens (shopify_access_token, store_url) VALUES ($1, $2);', [session.accessToken, `https://${session.shop}/`]);
@@ -146,16 +97,16 @@ const authMiddleware = (app) => {
         }
         
       } catch (error) {
-        console.log('Postgress error =>', error)
-      }
-	  // # Have to save Shopify Access Token here
 
-      const webhookRegisterResponse = await shopify.webhooks.register({
+        logger.error({'Postgress error =>': error})
+
+      }
+
+      await shopify.webhooks.register({
         session,
       });
-      console.log('Registered for webhooks');
-      // console.log(webhookRegisterResponse);
-      // console.dir(webhookRegisterResponse, { depth: null });
+
+      logger.info({'Webhook registered of shop': session.shop});
 
       return await shopify.auth.begin({
         shop: session.shop,
@@ -164,9 +115,12 @@ const authMiddleware = (app) => {
         rawRequest: req,
         rawResponse: res,
       });
+
     } catch (e) {
-      console.error(`---> Error at /api/auth/tokens`, e);
+
       const { shop } = req.query;
+      logger.error({'Error at /api/auth/tokens': `shop: ${shop}`, error: e});
+
       switch (true) {
         case e instanceof CookieNotFound:
           case e instanceof InvalidOAuthError:
@@ -182,11 +136,9 @@ const authMiddleware = (app) => {
       }
     }
 
-
   });
 
   app.get("/api/auth/callback", async (req, res) => {
-    console.log('/api/auth/callback')
 
     try {
       const callbackResponse = await shopify.auth.callback({
@@ -208,9 +160,12 @@ const authMiddleware = (app) => {
       ); //Update store to true after auth has happened, or it'll cause reinstall issues.
 
       return res.redirect(`/?shop=${shop}`);
+
     } catch (e) {
-      console.error(`---> Error at /api/auth/callback`, e);
+
       const { shop } = req.query;
+      logger.error({'Error at /api/auth/callback': `shop: ${shop}`, error: e});
+      
       switch (true) {
         case e instanceof CookieNotFound:
         case e instanceof InvalidOAuthError:
@@ -229,28 +184,3 @@ const authMiddleware = (app) => {
 };
 
 export default authMiddleware;
-
-// * Experimental => Getting data using Rest Api => /admin/oauth/authorize
-// try {
-//   const oAuthUrl = `https://${req.query.shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${'https://shopifyapp.openleaf.tech/api/auth/callback'}`
-//   const response = await fetch(oAuthUrl)
-//   console.log('Getting data using /admin/oauth/authorize => ', response);
-// } catch (error) {
-//   console.log('Rest api error => /admin/oauth/authorize => ', error);
-// }
-
-// * Experimental => Getting data using /api/configdatashow
-// try {
-//   const apiUrl = `https://${session.shop}/api/configdatashow`;
-//   const response = await fetch(apiUrl, {
-//     method: 'GET',
-//     headers: {
-//     'Content-Type': 'application/json',
-//     'X-Shopify-Access-Token': req?.query.code,
-//   },
-//   })
-//   const result = await response.json();
-//   console.log('API configshow data response => ', result);
-// } catch (error) {
-//   console.log('API configshow data error => ', error);
-// }
