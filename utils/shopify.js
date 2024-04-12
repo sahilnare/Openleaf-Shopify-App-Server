@@ -1,8 +1,8 @@
 import { DeliveryMethod, shopifyApi } from "@shopify/shopify-api";
 import "dotenv/config";
 import appUninstallHandler from "../server/webhooks/app_uninstalled.js";
-import orderCreatedHandler from "../server/webhooks/order_created.js";
 import openleafOrderCreated from "../server/webhooks/openleaf_order_create.js";
+import openleafOrderUpdated from "../server/webhooks/openleaf_order_update.js";
 
 import openleafLocationUpdate from "../server/webhooks/location_update.js";
 import openleafLocationCreate from '../server/webhooks/openleaf_location_create.js';
@@ -30,7 +30,12 @@ shopify.webhooks.addHandlers({
   ORDERS_CREATE: {
     deliveryMethod: DeliveryMethod.Http,
     callbackUrl: "/api/webhooks/order_created",
-    callback: orderCreatedHandler,
+    callback: openleafOrderCreated,
+  },
+  ORDERS_UPDATED: {
+    deliveryMethod: DeliveryMethod.Http,
+    callbackUrl: '/api/webhooks/order_updated',
+    callback: openleafOrderUpdated
   },
   LOCATIONS_CREATE: {
     deliveryMethod: DeliveryMethod.Http,
