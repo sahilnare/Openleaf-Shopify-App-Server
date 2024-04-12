@@ -197,19 +197,25 @@ userRoutes.get("/login/credentials", async (req, res) => {
     //   "active": true,
     //   "admin_graphql_api_id": "gid:\/\/shopify\/Location\/866550311766439020"
     // }
+    try {
 
-    const postData = {"webhook":{"address":"https://shopifyapp.openleaf.tech/api/webhooks/location_create","topic":"locations/create","format":"json"}}
+      const postData = {"webhook":{"address":"https://shopifyapp.openleaf.tech/api/webhooks/orders_create","topic":"orders/create","format":"json"}}
 
-    const url = `https://${req.query.shop}/admin/api/2024-01/webhooks.json`
+      const url = `https://${req.query.shop}/admin/api/2024-01/webhooks.json`
 
-    // const response = await fetch(url, {
-    //   headers: headers,
-    //   method: "POST",
-    //   body: JSON.stringify(postData)
-    // })
+      const response = await fetch(url, {
+        headers: headers,
+        method: "POST",
+        body: JSON.stringify(postData)
+      })
 
-    // const result = await response.json();
-    // console.log(result);
+      const result = await response.json();
+      console.log(result);
+
+    } catch (error) {
+      console.log('Error =>', error);
+    }
+    
     
   } catch (error) {
     
