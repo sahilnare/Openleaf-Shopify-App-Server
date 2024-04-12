@@ -9,18 +9,42 @@ const openleafOrderCreated = async (
   topic,
   shop,
   webhookRequestBody,
-  webhookId,
   apiVersion
 ) => {
   /** @type {webhookTopic} */
-  const webhookBody = JSON.parse(webhookRequestBody);
 
-  console.log("Order is created!!!!!");
-  console.log("Here is the order body:");
-  console.log(webhookRequestBody);
-  console.log('webhook info => ', topic, shop, webhookId, apiVersion);
-//   await StoreModel.findOneAndUpdate({ shop }, { isActive: false });
-//   await SessionModel.deleteMany({ shop });
+  
+  const { rows } = await query('SELECT webhook_id, shopify_access_token FROM shopify_users WHERE store_url = $1', [`https://${shop}/`]);
+
+  if (rows.length !== 0) {
+
+    const webhookId = rows.webhook_id;
+
+    const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`
+
+    try {
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        body: webhookRequestBody
+      })
+
+    } catch (error) {
+
+      console.log('Error in server =>', error);
+      
+    }
+
+    // return res.status(200).json({message: "Order Created"})
+    console.log('Order Created')
+
+  } else {
+
+    // return res.status(200).json({message: "User not present with this shop"})
+    console.log(`User not present with this shop: ${shop}`)
+
+  }
+
 };
 
 export default openleafOrderCreated;

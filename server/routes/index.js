@@ -290,20 +290,20 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
 userRoutes.get('/islogin', async (req, res) => {
   const { shop } = req.query;
-  // try {
+  try {
     
-  //   const { rows } = await query('SELECT * FROM shopify_users WHERE store_url = $1', [`https://${shop}/`])
-  //   if (rows.length === 0) {
-  //     return res.status(401).json({message: "Shop not present", isUser: false})
-  //   } else {
-  //     return res.status(200).json({message: "User already present with this shop", isUser: true})
-  //   }
+    const { rows } = await query('SELECT * FROM shopify_users WHERE store_url = $1', [`https://${shop}/`])
+    if (rows.length === 0) {
+      return res.status(401).json({message: "Shop not present", isUser: false})
+    } else {
+      return res.status(200).json({message: "User already present with this shop", isUser: true})
+    }
 
-  // } catch (error) {
-  //   console.log(error);
-  //   return res.status(500).json({error, isUser: false})
-  // }
-  return res.status(500).json({message: 'Testing', isUser: false})
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({error, isUser: false})
+  }
+  // return res.status(500).json({message: 'Testing', isUser: false})
 })
 
 userRoutes.get('/syncOrders', async (req, res) => {
@@ -379,12 +379,5 @@ userRoutes.get('/syncOrders', async (req, res) => {
 
 })
 
-userRoutes.get('/temp/url', async (req, res) => {
-  console.log('temp/url headers =>', req?.headers)
-  console.log('temp/url query => ', req.query)
-  
-  console.log('in temp url')
-  return res.status(200).json({msg: 'hello'})
-})
 
 export default userRoutes;
