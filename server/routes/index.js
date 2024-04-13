@@ -183,11 +183,9 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
 		}
 
-    const isPassword = await argon2.verify(rows[0].password, password);
 
-    console.log(isPassword);
 
-		if (isPassword) {
+		if (await argon2.verify(rows[0].password, password)) {
 
 			// # Get shopify offline access token
 			const offline_access_token = await getOfflineAccessToken(req);
@@ -267,7 +265,7 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
 		} else {
 			
-      logger.error({'Shopify user login error =>': error})
+      logger.error({'Shopify user login error with shop =>': shop})
 			return res.status(401).json({
 				status: false,
 				message: 'Invalid Credentials'
