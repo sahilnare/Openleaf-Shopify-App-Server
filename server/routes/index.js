@@ -196,6 +196,8 @@ userRoutes.get("/login/credentials", async (req, res) => {
 				return;
 			}
 
+      logger.info({'Offline access token => ': `${offline_access_token} of ${shop}`})
+
 			const user_id = rows[0].user_id;
 
 			await query('INSERT INTO shopify_saved_tokens (shopify_access_token, store_url) VALUES ($1, $2)', [offline_access_token, `https://${shop}/`])
