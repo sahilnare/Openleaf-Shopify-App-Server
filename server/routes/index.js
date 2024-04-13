@@ -183,7 +183,9 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
 		}
 
-		if (await argon2.verify(rows[0].password, password)) {
+    const isPassword = await argon2.verify(rows[0].password, password);
+
+		if (isPassword) {
 
 			// # Get shopify offline access token
 			const offline_access_token = await getOfflineAccessToken(req);
@@ -263,7 +265,7 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
 		} else {
 			
-      logger.error({'Shopify user created successfully': error})
+      logger.error({'Shopify user login error =>': error})
 			return res.status(401).json({
 				status: false,
 				message: 'Invalid Credentials'
@@ -312,7 +314,7 @@ userRoutes.get('/syncOrders', async (req, res) => {
 
   const { shop } = req?.query;
     
-  const url = `https://${shop}/admin/api/2024-01/orders.json?status=any`;
+  const url = `https://${shop}/admin/api/2024-01/orders.json?status=any&limit=250`;
 
   const { rows } = await query('SELECT webhook_id, shopify_access_token FROM shopify_users WHERE store_url = $1', [`https://${shop}/`]);
 
