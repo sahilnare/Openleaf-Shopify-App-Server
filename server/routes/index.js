@@ -185,6 +185,8 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
     const isPassword = await argon2.verify(rows[0].password, password);
 
+    console.log(isPassword);
+
 		if (isPassword) {
 
 			// # Get shopify offline access token
