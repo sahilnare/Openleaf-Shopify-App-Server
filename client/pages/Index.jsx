@@ -98,7 +98,7 @@ const HomePage = () => {
   if (isUserLogin) {
     return (
       <div className="card-sync">
-        <Text variant="heading2xl" alignment="center" tone="base">Register Successfully on Openleaf</Text>
+        <Text variant="heading2xl" alignment="center" tone="base" margin="30px 10px">Registered Successfully on Openleaf</Text>
         <Card className='card-sync-main'>
           <Text as="h2" variant="headingMd">
             Synchronize all your orders with Openleaf.
@@ -114,7 +114,7 @@ const HomePage = () => {
   return (
     <>
 <div className="login-container">
-      <img src="/openleaf.svg" alt="Your Company Logo" className="logo" />
+      <img src="/openleaf.svg" alt="Openleaf Logo" className="logo" />
       <Text variant="heading3xl" as="h2">
         Login
       </Text>
@@ -143,7 +143,7 @@ const HomePage = () => {
           <div>
             <h3>
               New here? {" "}
-              <a href="https://dashboard.openleaf.tech/auth/register">
+              <a href="https://dashboard.openleaf.tech/auth/register" target="_blank">
                 Create Account
               </a>
             </h3>
