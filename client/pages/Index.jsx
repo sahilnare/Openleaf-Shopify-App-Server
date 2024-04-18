@@ -98,7 +98,7 @@ const HomePage = () => {
   if (isUserLogin) {
     return (
       <div className="card-sync">
-        <Text className="top-heading" variant="heading2xl" alignment="center" tone="base">Test Registered Successfully on Openleaf</Text>
+        <Text className="top-heading" variant="heading2xl" alignment="center" tone="base">Registered Successfully on Openleaf</Text>
         <Card className='card-sync-main'>
           <Text as="h2" variant="headingMd">
             Synchronize all your orders with Openleaf.
