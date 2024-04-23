@@ -33,7 +33,7 @@ const openleafOrderCreated = async (
         headers: {
           'Content-Type': 'application/json'
         }
-      })
+      });
 
     } catch (error) {
 

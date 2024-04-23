@@ -31,7 +31,7 @@ const openleafOrderUpdated = async (
           'Content-Type': 'application/json'
         },
         body: webhookRequestBody
-      })
+      });
 
     } catch (error) {
 

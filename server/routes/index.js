@@ -208,7 +208,8 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
 			if (!webhookId) {
 
-				logger.error({'Webhook Error': 'Failed to insert shopify user'})
+				logger.error({'Webhook Error': 'Failed to insert shopify user'});
+				logger.error({ user_id, email, apikey, offline_access_token });
 
 				return res.status(400).json({
 					status: false,
@@ -246,7 +247,8 @@ userRoutes.get("/login/credentials", async (req, res) => {
 
 			} catch (error) {
 
-				logger.error({'Error in getting locations': error})
+				logger.error({'Error in getting locations': error});
+				logger.error({ user_id, email, apikey, offline_access_token });
 
 				return res.status(500).json({
 					status: false,
