@@ -310,6 +310,12 @@ userRoutes.get('/islogin', async (req, res) => {
 
 })
 
+const waitFor = (delay) => new Promise((resolve, reject) => {
+
+	setTimeout(resolve, delay);
+
+});
+
 userRoutes.get('/syncOrders', async (req, res) => {
 
   logger.info({'syncing orders of ': req?.query?.shop});
@@ -349,26 +355,56 @@ userRoutes.get('/syncOrders', async (req, res) => {
     const ordersArray = result?.orders;
 
     try {
+
+		for (const order of ordersArray) {
+
+			try {
+
+				const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`;
+    
+				const options = {
+					method: 'POST',
+					headers: {
+					'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(order)
+				};
+
+				await waitFor(300);
+
+				const response = await fetch(url, options);
+
+				logger.info({ 'Order synced:': order.id });
+
+				// const result = await response.json();
+				
+			} catch (error) {
+
+				logger.error({ 'Order Sync error:': { error }});
+				
+			}
+
+		}
       
-      const bulkOrderRes = await Promise.all(ordersArray.map(async (order, order_index) => {
+    //   const bulkOrderRes = await Promise.all(ordersArray.map(async (order, order_index) => {
   
-        const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`;
+    //     const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`;
     
-        const options = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(order)
-        };
+    //     const options = {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json'
+    //       },
+    //       body: JSON.stringify(order)
+    //     };
     
-        const response = await fetch(url, options);
+    //     const response = await fetch(url, options);
     
-        const result = await response.json();
+    //     const result = await response.json();
         
-      }));
+    //   }));
   
-      return res.status(201).json({message: 'Bulk Order created!', bulkOrderRes})
+      return res.status(201).json({message: 'Bulk Orders synced!', bulkOrderRes})
 
     } catch (error) {
 
