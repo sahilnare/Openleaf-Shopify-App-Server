@@ -39,12 +39,12 @@ shopify.webhooks.addHandlers({
   },
   LOCATIONS_CREATE: {
     deliveryMethod: DeliveryMethod.Http,
-    callbackUrl: 'https://shopifyapp.openleaf.tech/api/webhooks/location_create',
+    callbackUrl: 'https://marketplace1.openleaf.tech/api/webhooks/location_create',
     callback: openleafLocationCreate
   },
   LOCATIONS_UPDATE: {
     deliveryMethod: DeliveryMethod.Http,
-    callbackUrl: 'https://shopifyapp.openleaf.tech/api/webhooks/location_create',
+    callbackUrl: 'https://marketplace1.openleaf.tech/api/webhooks/location_create',
     callback: openleafLocationUpdate
   }
 });
