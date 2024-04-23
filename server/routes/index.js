@@ -1,7 +1,7 @@
 import { Router } from "express";
 import clientProvider from "../../utils/clientProvider.js";
 import argon2 from 'argon2'
-import shopify from "../../utils/shopify.js";
+// import shopify from "../../utils/shopify.js";
 import { insertShopifyLocation, insertShopifyPackaging, insertShopifyUserAndGetWebhookID } from "./insertHandler.js";
 import logger from "../logger.js";
 

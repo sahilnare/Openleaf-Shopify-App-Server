@@ -20,6 +20,7 @@ import verifyProxy from "./middleware/verifyProxy.js";
 import verifyRequest from "./middleware/verifyRequest.js";
 import proxyRouter from "./routes/app_proxy/index.js";
 import userRoutes from "./routes/index.js";
+import complianceRoutes from './routes/compliance.js'
 
 setupCheck(); // Run a check to ensure everything is setup properly
 
@@ -90,6 +91,7 @@ const createServer = async (root = process.cwd()) => {
   app.use(isShopActive);
   // If you're making changes to any of the routes, please make sure to add them in `./client/vite.config.cjs` or it'll not work.
   app.use("/api/apps", verifyRequest, userRoutes); //Verify user route requests
+  app.use("/api/compliance", verifyRequest, complianceRoutes); //Compliance route requests
   app.use("/api/proxy_route", verifyProxy, proxyRouter); //MARK:- App Proxy routes
 
   app.post("/api/gdpr/:topic", verifyHmac, async (req, res) => {
