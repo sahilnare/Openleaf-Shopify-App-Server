@@ -322,7 +322,7 @@ userRoutes.get('/syncOrders', async (req, res) => {
 
   const { shop } = req?.query;
     
-  const url = `https://${shop}/admin/api/2024-01/orders.json?status=any&limit=100`;
+  const url = `https://${shop}/admin/api/2024-01/orders.json?status=any&limit=50`;
 
   const { rows } = await query('SELECT webhook_id, shopify_access_token FROM shopify_users WHERE store_url = $1', [`https://${shop}/`]);
 

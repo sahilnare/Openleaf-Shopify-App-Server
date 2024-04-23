@@ -104,7 +104,9 @@ const HomePage = () => {
             Synchronize all your orders with Openleaf.
           </Text>
           <div className='card-sync-btn'>
-            <Button primary onClick={submitSync}>Sync</Button>
+            <Button primary onClick={submitSync}>
+				{loader ? <Spinner accessibilityLabel="Spinner example" size="small" /> : 'Sync'}
+			</Button>
           </div>
         </Card>
       </div>
