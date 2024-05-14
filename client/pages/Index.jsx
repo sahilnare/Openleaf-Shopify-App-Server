@@ -2,7 +2,6 @@ import { Form, FormLayout, TextField, Button, Text, Card, Spinner } from "@shopi
 import { useEffect, useState, useCallback } from "react";
 import "./index.css";
 import { useNavigate } from "raviger";
-import { useSearchParams } from "@remix-run/react";
 
 const HomePage = () => {
 
@@ -15,7 +14,7 @@ const HomePage = () => {
   const [loader, setLoader] = useState(true)
 
   // const navigate = useNavigate()
-  const [searchParams, setSearchParams] = useSearchParams();
+  const params = new URLSearchParams(window.location.search);
 
   const checkLogin = async (shop_url) => {
     setLoader(true)
@@ -87,9 +86,6 @@ const HomePage = () => {
     [],
   )
 
-  useEffect(() => {
-    console.log(searchParams.has('hmac'))
-  }, [shopUrl])
 
   useEffect(() => {
     if (window?.shopify?.config) {
@@ -104,6 +100,7 @@ const HomePage = () => {
     }
   }, [shopUrl])
 
+  console.log("params =>", params, params?.get('hmac'));
   if (isUserLogin) {
     return (
       <div className="card-sync">
