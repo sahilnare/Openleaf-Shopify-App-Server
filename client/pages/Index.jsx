@@ -1,6 +1,8 @@
 import { Form, FormLayout, TextField, Button, Text, Card, Spinner } from "@shopify/polaris";
 import { useEffect, useState, useCallback } from "react";
 import "./index.css";
+import { useNavigate } from "raviger";
+import { useSearchParams } from "@remix-run/react";
 
 const HomePage = () => {
 
@@ -11,6 +13,9 @@ const HomePage = () => {
   const [shopUrl, setShopUrl] = useState(null)
   const [isUserLogin, setIsUserLogin] = useState(false)
   const [loader, setLoader] = useState(true)
+
+  // const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const checkLogin = async (shop_url) => {
     setLoader(true)
@@ -81,6 +86,13 @@ const HomePage = () => {
     (newValue) => setPassword(newValue),
     [],
   )
+
+  useEffect(() => {
+    if (shopUrl) {
+      console.log(searchParams.get('hmac'))
+    }
+    console.log(searchParams.has('hmac'))
+  }, [shopUrl])
 
   useEffect(() => {
     if (window?.shopify?.config) {
