@@ -1,8 +1,6 @@
 import { Form, FormLayout, TextField, Button, Text, Card, Spinner } from "@shopify/polaris";
 import { useEffect, useState, useCallback } from "react";
 import "./index.css";
-import { useSearchParams } from "@remix-run/react";
-import { navigate, useNavigate, useQueryParams } from "raviger";
 
 const HomePage = () => {
 
@@ -13,11 +11,6 @@ const HomePage = () => {
   const [shopUrl, setShopUrl] = useState(null)
   const [isUserLogin, setIsUserLogin] = useState(false)
   const [loader, setLoader] = useState(true)
-
-  const [queryParameters] = useSearchParams();
-  const query = useQueryParams();
-
-  const navigate = useNavigate();
 
   const checkLogin = async (shop_url) => {
     setLoader(true)
@@ -88,17 +81,6 @@ const HomePage = () => {
     (newValue) => setPassword(newValue),
     [],
   )
-
-  useEffect(() => {
-    console.log(queryParameters);
-    // if (queryParameters.has('hmac') && shopUrl) {
-    //   navigate(`https://marketplace1.openleaf.tech/api/auth?shop=${shopUrl}`)
-    // }
-  }, [queryParameters, shopUrl])
-
-  useEffect(() => {
-    console.log(query);
-  }, [query, shopUrl])
 
   useEffect(() => {
     if (window?.shopify?.config) {
