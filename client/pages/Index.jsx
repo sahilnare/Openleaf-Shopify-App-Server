@@ -88,9 +88,6 @@ const HomePage = () => {
   )
 
   useEffect(() => {
-    if (shopUrl) {
-      console.log(searchParams.get('hmac'))
-    }
     console.log(searchParams.has('hmac'))
   }, [shopUrl])
 
