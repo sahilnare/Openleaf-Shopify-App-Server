@@ -91,9 +91,9 @@ const HomePage = () => {
 
   useEffect(() => {
     console.log(queryParameters);
-    if (queryParameters.has('hmac') && shopUrl) {
-      navigate(`https://marketplace1.openleaf.tech/api/auth?shop=${shopUrl}`)
-    }
+    // if (queryParameters.has('hmac') && shopUrl) {
+    //   navigate(`https://marketplace1.openleaf.tech/api/auth?shop=${shopUrl}`)
+    // }
   }, [queryParameters, shopUrl])
 
   useEffect(() => {
