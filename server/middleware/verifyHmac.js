@@ -11,6 +11,8 @@ const verifyHmac = (req, res, next) => {
       .digest("base64");
     const hmac = req.headers["x-shopify-hmac-sha256"];
 
+    console.log('Hmac =>', generateHash, hmac);
+
     if (shopify.auth.safeCompare(generateHash, hmac)) {
       next();
     } else {
