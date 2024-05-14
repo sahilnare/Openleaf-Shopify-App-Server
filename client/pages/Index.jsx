@@ -13,7 +13,7 @@ const HomePage = () => {
   const [isUserLogin, setIsUserLogin] = useState(false)
   const [loader, setLoader] = useState(true)
 
-  // const navigate = useNavigate()
+  const navigate = useNavigate()
   const params = new URLSearchParams(window.location.search);
 
   const checkLogin = async (shop_url) => {
@@ -99,6 +99,13 @@ const HomePage = () => {
       checkLogin(shopUrl)
     }
   }, [shopUrl])
+
+  useEffect(() => {
+    if (params?.get('hmac') && shopUrl) {
+      console.log("Navigating")
+      navigate(`https://marketplace1.openleaf.tech/api/auth?shop=${shopUrl}`)
+    }
+  }, [shopUrl, params])
 
   console.log("params =>", params, params?.get('hmac'));
   if (isUserLogin) {
