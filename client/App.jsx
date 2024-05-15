@@ -4,12 +4,17 @@ import translations from "@shopify/polaris/locales/en.json";
 import { useNavigate, useRoutes } from "raviger";
 import routes from "./Routes";
 import AppBridgeProvider from "./providers/AppBridgeProvider";
+import { useAppBridge } from "@shopify/app-bridge-react";
+import { Redirect } from "@shopify/app-bridge/actions"
 
 export default function App() {
+
+  const app = useAppBridge();
+  const redirect = Redirect.create(app);
+
   const RouteComponents = useRoutes(routes);
 
-  const navigate = useNavigate();
-  navigate('https://dashboard.openleaf.tech/admin/dashboard');
+  redirect.dispatch(Redirect.Action.REMOTE, '/otherpage?somequeryparam=123');
 
   return (
     <PolarisProvider i18n={translations}>
