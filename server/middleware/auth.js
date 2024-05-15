@@ -13,6 +13,7 @@ import { crypto } from "@shopify/shopify-api/runtime";
 import querystring from 'querystring';
 import query from "../../utils/dbConnect.js";
 import logger from "../logger.js";
+import { getOfflineAccessToken } from "../../utils/getOfflineToken.js";
 
 const authMiddleware = (app) => {
 
