@@ -181,6 +181,7 @@ userRoutes.get('/offline/token', async (req, res) => {
   }
 
   logger.info({'Offline access token => ': `${offline_access_token} of ${shop}`})
+  console.log('offline access token =>', offline_access_token);
 
   try {
     

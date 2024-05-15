@@ -86,6 +86,9 @@ const authMiddleware = (app) => {
 
       await sessionHandler.storeSession(session);
       
+      console.log('sesssionHandler offline access token => ', session.accessToken);
+      logger.info({'Session.accessToken': session.accessToken});
+
       // try {
 
       //   const {rows} = await query('SELECT * FROM shopify_saved_tokens WHERE store_url = $1', [`https://${session.shop}/`])
