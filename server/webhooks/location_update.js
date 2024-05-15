@@ -15,7 +15,7 @@ const openleafOrderCreated = async (
   /** @type {webhookTopic} */
   const webhookBody = JSON.parse(webhookRequestBody);
 
-  logger.info({'new location is created with shop =>': shop, body: webhookBody})
+  // logger.info({'new location is created with shop =>': shop, body: webhookBody})
 };
 
 export default openleafOrderCreated;

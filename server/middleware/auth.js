@@ -12,9 +12,8 @@ import shopify from "../../utils/shopify.js";
 import { crypto } from "@shopify/shopify-api/runtime";
 import querystring from 'querystring';
 import query from "../../utils/dbConnect.js";
-// import logger from "../logger.js";
+import logger from "../logger.js";
 import { getOfflineAccessToken } from "../../utils/getOfflineToken.js";
-// import logger from "../logger.js";
 
 const authMiddleware = (app) => {
 
@@ -42,8 +41,6 @@ const authMiddleware = (app) => {
 
 			}
 
-      console.log('start page 1')
-
 			return await shopify.auth.begin({
         shop: req.query.shop,
         callbackPath: "/api/auth/tokens",
@@ -55,7 +52,7 @@ const authMiddleware = (app) => {
 		} catch (e) {
 
       const { shop } = req.query;
-			// logger.error({'Error at /api/auth': `shop: ${shop}`, error: e});
+			logger.error({'Error at /api/auth': `shop: ${shop}`, error: e});
 			switch (true) {
 			case e instanceof CookieNotFound:
 			case e instanceof InvalidOAuthError:
@@ -74,7 +71,6 @@ const authMiddleware = (app) => {
 
   app.get("/api/auth/tokens", async (req, res) => {
 
-    console.log('start page 2')
     try {
       const callbackResponse = await shopify.auth.callback({
         rawRequest: req,
@@ -111,7 +107,7 @@ const authMiddleware = (app) => {
         session,
       });
 
-      // logger.info({'Webhook registered of shop': session.shop});
+      logger.info({'Webhook registered of shop': session.shop});
 
       // # Get shopify offline access token
       const offline_access_token = await getOfflineAccessToken(req);
@@ -124,8 +120,7 @@ const authMiddleware = (app) => {
         return;
       }
     
-      // logger.info({'Offline access token => ': `${offline_access_token} of ${req.query.shop}`})
-      console.log('offline access token', offline_access_token);
+      logger.info({'Offline access token => ': `${offline_access_token} of ${req.query.shop}`})
     
       try {
         
@@ -139,8 +134,7 @@ const authMiddleware = (app) => {
     
       } catch (error) {
     
-        // logger.info({'Postgre Sql error =>': error})
-        console.log('postgre =>', error);
+        logger.info({'Postgre Sql error =>': error})
         return res.status(400).json({
           status: false,
           message: 'SQL error'
@@ -159,7 +153,7 @@ const authMiddleware = (app) => {
     } catch (e) {
 
       const { shop } = req.query;
-      // logger.error({'Error at /api/auth/tokens': `shop: ${shop}`, error: e});
+      logger.error({'Error at /api/auth/tokens': `shop: ${shop}`, error: e});
 
       switch (true) {
         case e instanceof CookieNotFound:
@@ -204,7 +198,7 @@ const authMiddleware = (app) => {
     } catch (e) {
 
       const { shop } = req.query;
-      // logger.error({'Error at /api/auth/callback': `shop: ${shop}`, error: e});
+      logger.error({'Error at /api/auth/callback': `shop: ${shop}`, error: e});
       
       switch (true) {
         case e instanceof CookieNotFound:
