@@ -9,18 +9,18 @@ import { Redirect } from "@shopify/app-bridge/actions"
 
 export default function App() {
 
-  const app = useAppBridge();
-  const redirect = Redirect.create(app);
+  // const app = useAppBridge();
+  // const redirect = Redirect.create(app);
 
   const RouteComponents = useRoutes(routes);
 
-  redirect.dispatch(Redirect.Action.REMOTE, 'https://dashboard.openleaf.tech/admin/dashboard');
+  // redirect.dispatch(Redirect.Action.REMOTE, 'https://dashboard.openleaf.tech/admin/dashboard');
 
   return (
     <PolarisProvider i18n={translations}>
       <AppBridgeProvider>
         {/* <ui-nav-menu>
-          <a href="/debug/data">Fetch Data</a>
+          <a href="/debug/data">Fetch Data</a>  
           <a href="/debug/billing">Billing API</a>
         </ui-nav-menu> */}
         {RouteComponents}
