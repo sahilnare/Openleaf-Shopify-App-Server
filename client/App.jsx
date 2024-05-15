@@ -14,7 +14,7 @@ export default function App() {
 
   const RouteComponents = useRoutes(routes);
 
-  redirect.dispatch(Redirect.Action.REMOTE, '/otherpage?somequeryparam=123');
+  redirect.dispatch(Redirect.Action.REMOTE, 'https://dashboard.openleaf.tech/admin/dashboard');
 
   return (
     <PolarisProvider i18n={translations}>
