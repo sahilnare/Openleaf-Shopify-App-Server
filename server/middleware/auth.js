@@ -87,7 +87,7 @@ const authMiddleware = (app) => {
       await sessionHandler.storeSession(session);
       
       console.log('sesssionHandler offline access token => ', session.accessToken);
-      logger.info({'Session.accessToken': session.accessToken});
+      logger.info({'Session.accessToken': session.accessToken, "for shop": session.shop});
 
       // try {
 
@@ -114,6 +114,8 @@ const authMiddleware = (app) => {
       });
 
       logger.info({'Webhook registered of shop': session.shop});
+
+      return res.redirect(`https://dashboard.openleaf.tech/auth/login?shop=${session.shop}&accessToken=${session.accessToken}`)
 
       return await shopify.auth.begin({
         shop: session.shop,
