@@ -23,7 +23,7 @@ const appUninstallHandler = async (
     
     const { rows } = await query('DELETE FROM shopify_users WHERE store_url = $1 RETURNING user_id', [`https://${shop}/`]);
 
-    console.log(rows);
+    console.log('webhookREqBody', webhookRequestBody, webhookId, apiVersion);
     user_id = rows[0].user_id;
 
     logger.info({"Shopify User deleted with user_id =>": user_id});

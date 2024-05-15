@@ -3,6 +3,46 @@ import { useEffect, useState, useCallback } from "react";
 import "./index.css";
 import { useNavigate } from "raviger";
 
+const Home = () => {
+
+  const [loader, setLoader] = useState(true);
+  const [shopUrl, setShopUrl] = useState(null);
+  const [shopApiKey, setShopApiKey] = useState(null);
+
+  const navigate = useNavigate();
+
+  const getOfflineToken = async () => {
+
+    setLoader(true);
+    const res = await fetch(`/api/apps/offline/token?shop=${shopUrl}`);
+    if (res.ok) {
+      navigate(`https://dashboard.openleaf.tech/admin/shopify/?shop=${shopUrl}&apiKey=${shopApiKey}`)
+    }
+    setLoader(false)
+  }
+
+  useEffect(() => {
+
+    if (window?.shopify?.config) {
+      setShopApiKey(window?.shopify?.config?.apiKey)
+      setShopUrl(window?.shopify?.config?.shop)
+    }
+
+  }, [window])
+
+  useEffect(() => {
+
+    if (shopUrl) {
+      getOfflineToken();
+    }
+
+  }, [shopUrl])
+
+  return (
+    <Spinner accessibilityLabel="Spinner example" size="large" width="100vw" height="100vh" text="center" />
+  )
+}
+
 const HomePage = () => {
 
   const [email, setEmail] = useState('')
@@ -192,4 +232,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default Home;

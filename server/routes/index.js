@@ -165,6 +165,42 @@ userRoutes.get("/debug/createNewSubscription", async (req, res) => {
 
 });
 
+userRoutes.get('/offline/token', async (req, res) => {
+
+  
+  // # Get shopify offline access token
+  const offline_access_token = await getOfflineAccessToken(req);
+
+  if (!offline_access_token) {
+    res.status(400).json({
+      status: false,
+      message: 'Offline access token not found'
+    })
+    return;
+  }
+
+  logger.info({'Offline access token => ': `${offline_access_token} of ${shop}`})
+
+  try {
+    
+    await query('INSERT INTO shopify_saved_tokens (shopify_access_token, store_url) VALUES ($1, $2)', [offline_access_token, `https://${shop}/`])
+    return res.status(200).json({
+      status: true,
+      message: "Offline Access token succesfully saved"
+    })
+    
+  } catch (error) {
+
+    logger.info({'Postgre Sql error =>': error})
+    return res.status(400).json({
+      status: false,
+      message: 'SQL error'
+    })
+
+  }
+
+
+})
 
 userRoutes.get("/login/credentials", async (req, res) => {
 
