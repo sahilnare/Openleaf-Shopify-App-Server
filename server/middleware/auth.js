@@ -108,7 +108,7 @@ const authMiddleware = (app) => {
         session,
       });
 
-      logger.info({'Webhook registered of shop': session.shop});
+      // logger.info({'Webhook registered of shop': session.shop});
 
       // # Get shopify offline access token
       const offline_access_token = await getOfflineAccessToken(req);
@@ -121,7 +121,8 @@ const authMiddleware = (app) => {
         return;
       }
     
-      logger.info({'Offline access token => ': `${offline_access_token} of ${req.query.shop}`})
+      // logger.info({'Offline access token => ': `${offline_access_token} of ${req.query.shop}`})
+      console.log('offline access token', offline_access_token);
     
       try {
         
@@ -135,7 +136,8 @@ const authMiddleware = (app) => {
     
       } catch (error) {
     
-        logger.info({'Postgre Sql error =>': error})
+        // logger.info({'Postgre Sql error =>': error})
+        console.log('postgre =>', error);
         return res.status(400).json({
           status: false,
           message: 'SQL error'
