@@ -1,8 +1,8 @@
 import { Form, FormLayout, TextField, Button, Text, Card, Spinner } from "@shopify/polaris";
 import { useEffect, useState, useCallback } from "react";
 import "./index.css";
-// import { useNavigate } from "raviger";
-import { useNavigate } from "@shopify/app-bridge-react";
+import { useNavigate } from "raviger";
+// import { useNavigate } from "@shopify/app-bridge-react";
 
 const Home = () => {
 
@@ -20,7 +20,9 @@ const Home = () => {
     console.log(res.ok);
     if (res.ok) {
       console.log('navigating')
-      navigate(`https://dashboard.openleaf.tech`)
+      navigate(`https://dashboard.openleaf.tech`, {
+        replace: true
+      })
       // window.location.replace(`https://dashboard.openleaf.tech`)
       // window.location.replace(`https://dashboard.openleaf.tech/admin/shopify/?shop=${shopUrl}&apiKey=${shopApiKey}`)
     }
