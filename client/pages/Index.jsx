@@ -1,8 +1,8 @@
 import { Form, FormLayout, TextField, Button, Text, Card, Spinner } from "@shopify/polaris";
 import { useEffect, useState, useCallback } from "react";
 import "./index.css";
-import { useNavigate } from "raviger";
-import { Navigate } from "react-router";
+// import { useNavigate } from "raviger";
+import { useNavigate } from "@shopify/app-bridge-react";
 
 const Home = () => {
 
@@ -10,8 +10,7 @@ const Home = () => {
   const [shopUrl, setShopUrl] = useState(null);
   const [shopApiKey, setShopApiKey] = useState(null);
 
-
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 //   navigate('https://dashboard.openleaf.tech/admin/dashboard');
 
   const getOfflineToken = async () => {
@@ -21,9 +20,9 @@ const Home = () => {
     console.log(res.ok);
     if (res.ok) {
       console.log('navigating')
-      window.location.replace(`https://dashboard.openleaf.tech`)
+      navigate(`https://dashboard.openleaf.tech`)
+      // window.location.replace(`https://dashboard.openleaf.tech`)
       // window.location.replace(`https://dashboard.openleaf.tech/admin/shopify/?shop=${shopUrl}&apiKey=${shopApiKey}`)
-      // navigate(`https://dashboard.openleaf.tech/admin/shopify/?shop=${shopUrl}&apiKey=${shopApiKey}`)
     }
     setLoader(false)
   }
