@@ -185,10 +185,12 @@ userRoutes.get('/offline/token', async (req, res) => {
   try {
     
     await query('INSERT INTO shopify_saved_tokens (shopify_access_token, store_url) VALUES ($1, $2)', [offline_access_token, `https://${shop}/`])
-    return res.status(200).json({
-      status: true,
-      message: "Offline Access token succesfully saved"
-    })
+    // return res.status(200).json({
+    //   status: true,
+    //   message: "Offline Access token succesfully saved"
+    // })
+
+    return res.redirect(`https://dashboard.openleaf.tech/`)
 
   } catch (error) {
 
