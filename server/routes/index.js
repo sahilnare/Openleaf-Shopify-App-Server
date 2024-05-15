@@ -167,6 +167,7 @@ userRoutes.get("/debug/createNewSubscription", async (req, res) => {
 
 userRoutes.get('/offline/token', async (req, res) => {
 
+  const { shop } = req.query;
   
   // # Get shopify offline access token
   const offline_access_token = await getOfflineAccessToken(req);
@@ -188,7 +189,7 @@ userRoutes.get('/offline/token', async (req, res) => {
       status: true,
       message: "Offline Access token succesfully saved"
     })
-    
+
   } catch (error) {
 
     logger.info({'Postgre Sql error =>': error})
