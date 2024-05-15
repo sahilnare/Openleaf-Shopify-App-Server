@@ -12,7 +12,7 @@ import shopify from "../../utils/shopify.js";
 import { crypto } from "@shopify/shopify-api/runtime";
 import querystring from 'querystring';
 import query from "../../utils/dbConnect.js";
-import logger from "../logger.js";
+// import logger from "../logger.js";
 import { getOfflineAccessToken } from "../../utils/getOfflineToken.js";
 // import logger from "../logger.js";
 
@@ -42,6 +42,8 @@ const authMiddleware = (app) => {
 
 			}
 
+      console.log('start page 1')
+
 			return await shopify.auth.begin({
         shop: req.query.shop,
         callbackPath: "/api/auth/tokens",
@@ -53,7 +55,7 @@ const authMiddleware = (app) => {
 		} catch (e) {
 
       const { shop } = req.query;
-			logger.error({'Error at /api/auth': `shop: ${shop}`, error: e});
+			// logger.error({'Error at /api/auth': `shop: ${shop}`, error: e});
 			switch (true) {
 			case e instanceof CookieNotFound:
 			case e instanceof InvalidOAuthError:
@@ -72,6 +74,7 @@ const authMiddleware = (app) => {
 
   app.get("/api/auth/tokens", async (req, res) => {
 
+    console.log('start page 2')
     try {
       const callbackResponse = await shopify.auth.callback({
         rawRequest: req,
@@ -156,7 +159,7 @@ const authMiddleware = (app) => {
     } catch (e) {
 
       const { shop } = req.query;
-      logger.error({'Error at /api/auth/tokens': `shop: ${shop}`, error: e});
+      // logger.error({'Error at /api/auth/tokens': `shop: ${shop}`, error: e});
 
       switch (true) {
         case e instanceof CookieNotFound:
@@ -201,7 +204,7 @@ const authMiddleware = (app) => {
     } catch (e) {
 
       const { shop } = req.query;
-      logger.error({'Error at /api/auth/callback': `shop: ${shop}`, error: e});
+      // logger.error({'Error at /api/auth/callback': `shop: ${shop}`, error: e});
       
       switch (true) {
         case e instanceof CookieNotFound:
