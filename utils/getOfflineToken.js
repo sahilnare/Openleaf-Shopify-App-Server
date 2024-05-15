@@ -1,5 +1,6 @@
 import shopify from './shopify.js';
 import { RequestedTokenType } from "@shopify/shopify-api";
+import logger from '../server/logger.js';
 
 function getSessionTokenHeader(request) {
 	return request.headers['authorization']?.replace('Bearer ', '');
