@@ -9,13 +9,17 @@ const Home = () => {
   const [shopUrl, setShopUrl] = useState(null);
   const [shopApiKey, setShopApiKey] = useState(null);
 
+
   const navigate = useNavigate();
+//   navigate('https://dashboard.openleaf.tech/admin/dashboard');
 
   const getOfflineToken = async () => {
 
     setLoader(true);
     const res = await fetch(`/api/apps/offline/token?shop=${shopUrl}`);
+    console.log(res.ok);
     if (res.ok) {
+      console.log('navigating')
       navigate(`https://dashboard.openleaf.tech/admin/shopify/?shop=${shopUrl}&apiKey=${shopApiKey}`)
     }
     setLoader(false)
