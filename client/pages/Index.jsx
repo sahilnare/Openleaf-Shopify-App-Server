@@ -21,7 +21,8 @@ const Home = () => {
     console.log(res.ok);
     if (res.ok) {
       console.log('navigating')
-      window.location.replace(`https://dashboard.openleaf.tech/admin/shopify/?shop=${shopUrl}&apiKey=${shopApiKey}`)
+      window.location.replace(`https://dashboard.openleaf.tech`)
+      // window.location.replace(`https://dashboard.openleaf.tech/admin/shopify/?shop=${shopUrl}&apiKey=${shopApiKey}`)
       // navigate(`https://dashboard.openleaf.tech/admin/shopify/?shop=${shopUrl}&apiKey=${shopApiKey}`)
     }
     setLoader(false)
