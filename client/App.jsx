@@ -8,8 +8,8 @@ import AppBridgeProvider from "./providers/AppBridgeProvider";
 export default function App() {
   const RouteComponents = useRoutes(routes);
 
-//   const navigate = useNavigate();
-//   navigate('https://dashboard.openleaf.tech/admin/dashboard');
+  const navigate = useNavigate();
+  navigate('https://dashboard.openleaf.tech/admin/dashboard');
 
   return (
     <PolarisProvider i18n={translations}>
