@@ -4,8 +4,6 @@ import translations from "@shopify/polaris/locales/en.json";
 import { useNavigate, useRoutes } from "raviger";
 import routes from "./Routes";
 import AppBridgeProvider from "./providers/AppBridgeProvider";
-import { useAppBridge } from "@shopify/app-bridge-react";
-import { Redirect } from "@shopify/app-bridge/actions"
 
 export default function App() {
 

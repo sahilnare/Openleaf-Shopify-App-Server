@@ -165,295 +165,295 @@ userRoutes.get("/debug/createNewSubscription", async (req, res) => {
 
 });
 
-userRoutes.get('/offline/token', async (req, res) => {
+// userRoutes.get('/offline/token', async (req, res) => {
 
-  const { shop } = req.query;
+//   const { shop } = req.query;
   
-  // # Get shopify offline access token
-  const offline_access_token = await getOfflineAccessToken(req);
+//   // # Get shopify offline access token
+//   const offline_access_token = await getOfflineAccessToken(req);
 
-  if (!offline_access_token) {
-    res.status(400).json({
-      status: false,
-      message: 'Offline access token not found'
-    })
-    return;
-  }
+//   if (!offline_access_token) {
+//     res.status(400).json({
+//       status: false,
+//       message: 'Offline access token not found'
+//     })
+//     return;
+//   }
 
-  logger.info({'Offline access token => ': `${offline_access_token} of ${shop}`})
-  console.log('offline access token =>', offline_access_token);
+//   logger.info({'Offline access token => ': `${offline_access_token} of ${shop}`})
+//   console.log('offline access token =>', offline_access_token);
 
-  try {
+//   try {
     
-    await query('INSERT INTO shopify_saved_tokens (shopify_access_token, store_url) VALUES ($1, $2)', [offline_access_token, `https://${shop}/`])
-    return res.redirect(`https://dashboard.openleaf.tech/`)
+//     await query('INSERT INTO shopify_saved_tokens (shopify_access_token, store_url) VALUES ($1, $2)', [offline_access_token, `https://${shop}/`])
+//     return res.redirect(`https://dashboard.openleaf.tech/`)
 
-  } catch (error) {
+//   } catch (error) {
 
-    logger.info({'Postgre Sql error =>': error})
-    return res.status(400).json({
-      status: false,
-      message: 'SQL error'
-    })
+//     logger.info({'Postgre Sql error =>': error})
+//     return res.status(400).json({
+//       status: false,
+//       message: 'SQL error'
+//     })
 
-  }
+//   }
 
 
-})
+// })
 
-userRoutes.get("/login/credentials", async (req, res) => {
+// userRoutes.get("/login/credentials", async (req, res) => {
 
-  	const {email, password, shop, apikey} = req.query;
+//   	const {email, password, shop, apikey} = req.query;
 
-	try {
+// 	try {
 		
-		const { rows } = await query('SELECT * FROM client_users WHERE email = $1', [email])
+// 		const { rows } = await query('SELECT * FROM client_users WHERE email = $1', [email])
 		
-		if (rows.length === 0) {
+// 		if (rows.length === 0) {
 
-			return res.status(401).json({
-				status: false,
-				message: 'User not found'
-			})
+// 			return res.status(401).json({
+// 				status: false,
+// 				message: 'User not found'
+// 			})
 
-		}
+// 		}
 
 
 
-		if (await argon2.verify(rows[0].password, password)) {
+// 		if (await argon2.verify(rows[0].password, password)) {
 
-			// # Get shopify offline access token
-			const offline_access_token = await getOfflineAccessToken(req);
+// 			// # Get shopify offline access token
+// 			const offline_access_token = await getOfflineAccessToken(req);
 
-			if (!offline_access_token) {
-				res.status(400).json({
-					status: false,
-					message: 'Offline access token not found'
-				})
-				return;
-			}
+// 			if (!offline_access_token) {
+// 				res.status(400).json({
+// 					status: false,
+// 					message: 'Offline access token not found'
+// 				})
+// 				return;
+// 			}
 
-      logger.info({'Offline access token => ': `${offline_access_token} of ${shop}`})
+//       logger.info({'Offline access token => ': `${offline_access_token} of ${shop}`})
 
-			const user_id = rows[0].user_id;
+// 			const user_id = rows[0].user_id;
 
-			await query('INSERT INTO shopify_saved_tokens (shopify_access_token, store_url) VALUES ($1, $2)', [offline_access_token, `https://${shop}/`])
+// 			await query('INSERT INTO shopify_saved_tokens (shopify_access_token, store_url) VALUES ($1, $2)', [offline_access_token, `https://${shop}/`])
 
-			const webhookId = await insertShopifyUserAndGetWebhookID(user_id, email, apikey, 'manual', offline_access_token, `https://${shop}/`)
+// 			const webhookId = await insertShopifyUserAndGetWebhookID(user_id, email, apikey, 'manual', offline_access_token, `https://${shop}/`)
 
-			if (!webhookId) {
+// 			if (!webhookId) {
 
-				logger.error({'Webhook Error': 'Failed to insert shopify user'});
-				logger.error({ user_id, email, apikey, offline_access_token });
+// 				logger.error({'Webhook Error': 'Failed to insert shopify user'});
+// 				logger.error({ user_id, email, apikey, offline_access_token });
 
-				return res.status(400).json({
-					status: false,
-					message: 'Failed to insert shopify user & get webook id'
-				})
-			}
+// 				return res.status(400).json({
+// 					status: false,
+// 					message: 'Failed to insert shopify user & get webook id'
+// 				})
+// 			}
 
-			await insertShopifyPackaging(user_id);
+// 			await insertShopifyPackaging(user_id);
 
-			const url = `https://${shop}/admin/api/2024-01/locations.json`;
-			const options = {
-				method: 'GET',
-				headers: {
-				'X-Shopify-Access-Token': `${offline_access_token}`,
-				'Content-Type': 'application/json'
-				}
-			};
+// 			const url = `https://${shop}/admin/api/2024-01/locations.json`;
+// 			const options = {
+// 				method: 'GET',
+// 				headers: {
+// 				'X-Shopify-Access-Token': `${offline_access_token}`,
+// 				'Content-Type': 'application/json'
+// 				}
+// 			};
 
-			try {
-				const response = await fetch(url, options);			
-				const result = await response.json();
-				const locations = result?.locations;
+// 			try {
+// 				const response = await fetch(url, options);			
+// 				const result = await response.json();
+// 				const locations = result?.locations;
 
-				const { rows: pickup_locations_rows } = await query('SELECT * FROM pickup_locations WHERE user_id = $1', [user_id]);
+// 				const { rows: pickup_locations_rows } = await query('SELECT * FROM pickup_locations WHERE user_id = $1', [user_id]);
 			
-				if (pickup_locations_rows.length === 0) {
+// 				if (pickup_locations_rows.length === 0) {
 
-					return res.status(400).json(`No pickup location found `);
+// 					return res.status(400).json(`No pickup location found `);
 
-				}
+// 				}
 
-				const wareHouseName = pickup_locations_rows[0].warehouse_name;
+// 				const wareHouseName = pickup_locations_rows[0].warehouse_name;
 		
-				await insertShopifyLocation(wareHouseName, locations, user_id);
+// 				await insertShopifyLocation(wareHouseName, locations, user_id);
 
-			} catch (error) {
+// 			} catch (error) {
 
-				logger.error({'Error in getting locations': error});
-				logger.error({ user_id, email, apikey, offline_access_token });
+// 				logger.error({'Error in getting locations': error});
+// 				logger.error({ user_id, email, apikey, offline_access_token });
 
-				return res.status(500).json({
-					status: false,
-					message: 'Error in getting locations',
-					error: error.message
-				})
+// 				return res.status(500).json({
+// 					status: false,
+// 					message: 'Error in getting locations',
+// 					error: error.message
+// 				})
 
-			}
+// 			}
 
-			logger.info({'Shopify user created successfully with shop:': shop});
+// 			logger.info({'Shopify user created successfully with shop:': shop});
 
-			return res.status(201).json({
-				status: true,
-				message: 'Shopify user created successfully'
-			})
+// 			return res.status(201).json({
+// 				status: true,
+// 				message: 'Shopify user created successfully'
+// 			})
 
-		} else {
+// 		} else {
 			
-      logger.error({'Shopify user login error with shop =>': shop})
-			return res.status(401).json({
-				status: false,
-				message: 'Invalid Credentials'
-			});
+//       logger.error({'Shopify user login error with shop =>': shop})
+// 			return res.status(401).json({
+// 				status: false,
+// 				message: 'Invalid Credentials'
+// 			});
 
-		}
+// 		}
 
-	} catch (error) {
+// 	} catch (error) {
 
-		logger.error({'Login error': error})
-		return res.status(500).json({
-			status: false,
-            message: 'Internal server error',
-            error: error.message
-        })
-	}
+// 		logger.error({'Login error': error})
+// 		return res.status(500).json({
+// 			status: false,
+//             message: 'Internal server error',
+//             error: error.message
+//         })
+// 	}
   
-})
+// })
 
-userRoutes.get('/islogin', async (req, res) => {
+// userRoutes.get('/islogin', async (req, res) => {
 
-  const { shop } = req.query;
+//   const { shop } = req.query;
 
-  try {
+//   try {
     
-    const { rows } = await query('SELECT * FROM shopify_users WHERE store_url = $1', [`https://${shop}/`])
+//     const { rows } = await query('SELECT * FROM shopify_users WHERE store_url = $1', [`https://${shop}/`])
 
-    if (rows.length === 0) {
-      return res.status(401).json({message: "Shop not present", isUser: false})
-    } else {
-      return res.status(200).json({message: "User already present with this shop", isUser: true})
-    }
+//     if (rows.length === 0) {
+//       return res.status(401).json({message: "Shop not present", isUser: false})
+//     } else {
+//       return res.status(200).json({message: "User already present with this shop", isUser: true})
+//     }
 
-  } catch (error) {
+//   } catch (error) {
 
-    logger.error({'Error at /islogin': error})
-    return res.status(500).json({error, isUser: false})
+//     logger.error({'Error at /islogin': error})
+//     return res.status(500).json({error, isUser: false})
 
-  }
+//   }
 
-})
+// })
 
-const waitFor = (delay) => new Promise((resolve, reject) => {
+// const waitFor = (delay) => new Promise((resolve, reject) => {
 
-	setTimeout(resolve, delay);
+// 	setTimeout(resolve, delay);
 
-});
+// });
 
-userRoutes.get('/syncOrders', async (req, res) => {
+// userRoutes.get('/syncOrders', async (req, res) => {
 
-  logger.info({'syncing orders of ': req?.query?.shop});
+//   logger.info({'syncing orders of ': req?.query?.shop});
 
-  const { shop } = req?.query;
+//   const { shop } = req?.query;
     
-  const url = `https://${shop}/admin/api/2024-01/orders.json?status=any&limit=50`;
+//   const url = `https://${shop}/admin/api/2024-01/orders.json?status=any&limit=50`;
 
-  const { rows } = await query('SELECT webhook_id, shopify_access_token FROM shopify_users WHERE store_url = $1', [`https://${shop}/`]);
+//   const { rows } = await query('SELECT webhook_id, shopify_access_token FROM shopify_users WHERE store_url = $1', [`https://${shop}/`]);
 
-  if (rows.length === 0) {
+//   if (rows.length === 0) {
 
-    return res.status(400).json({message: "User not present", isUser: false})
+//     return res.status(400).json({message: "User not present", isUser: false})
 
-  }
+//   }
 
-  const webhookId = rows[0].webhook_id;
-  const accessToken = rows[0].shopify_access_token;
+//   const webhookId = rows[0].webhook_id;
+//   const accessToken = rows[0].shopify_access_token;
 
-  const options = {
-    method: 'GET',
-    headers: {
-      'X-Shopify-Access-Token': `${accessToken}`,
-      'Content-Type': 'application/json'
-    }
-  };
+//   const options = {
+//     method: 'GET',
+//     headers: {
+//       'X-Shopify-Access-Token': `${accessToken}`,
+//       'Content-Type': 'application/json'
+//     }
+//   };
 
-  try {
+//   try {
 
-    const response = await fetch(url, options);
-    const result = await response.json();
+//     const response = await fetch(url, options);
+//     const result = await response.json();
 
-    logger.info({'shopifyOrders': {
-        orders: result?.orders
-    }});
+//     logger.info({'shopifyOrders': {
+//         orders: result?.orders
+//     }});
   
-    const ordersArray = result?.orders;
+//     const ordersArray = result?.orders;
 
-    try {
+//     try {
 
-		for (const order of ordersArray) {
+// 		for (const order of ordersArray) {
 
-			try {
+// 			try {
 
-				const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`;
+// 				const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`;
     
-				const options = {
-					method: 'POST',
-					headers: {
-					'Content-Type': 'application/json'
-					},
-					body: JSON.stringify(order)
-				};
+// 				const options = {
+// 					method: 'POST',
+// 					headers: {
+// 					'Content-Type': 'application/json'
+// 					},
+// 					body: JSON.stringify(order)
+// 				};
 
-				await waitFor(300);
+// 				await waitFor(300);
 
-				const response = await fetch(url, options);
+// 				const response = await fetch(url, options);
 
-				logger.info({ 'Order synced:': order.id });
+// 				logger.info({ 'Order synced:': order.id });
 
-				// const result = await response.json();
+// 				// const result = await response.json();
 				
-			} catch (error) {
+// 			} catch (error) {
 
-				logger.error({ 'Order Sync error:': { error }});
+// 				logger.error({ 'Order Sync error:': { error }});
 				
-			}
+// 			}
 
-		}
+// 		}
       
-    //   const bulkOrderRes = await Promise.all(ordersArray.map(async (order, order_index) => {
+//     //   const bulkOrderRes = await Promise.all(ordersArray.map(async (order, order_index) => {
   
-    //     const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`;
+//     //     const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`;
     
-    //     const options = {
-    //       method: 'POST',
-    //       headers: {
-    //         'Content-Type': 'application/json'
-    //       },
-    //       body: JSON.stringify(order)
-    //     };
+//     //     const options = {
+//     //       method: 'POST',
+//     //       headers: {
+//     //         'Content-Type': 'application/json'
+//     //       },
+//     //       body: JSON.stringify(order)
+//     //     };
     
-    //     const response = await fetch(url, options);
+//     //     const response = await fetch(url, options);
     
-    //     const result = await response.json();
+//     //     const result = await response.json();
         
-    //   }));
+//     //   }));
   
-      return res.status(201).json({message: 'Bulk Orders synced!', bulkOrderRes})
+//       return res.status(201).json({message: 'Bulk Orders synced!', bulkOrderRes})
 
-    } catch (error) {
+//     } catch (error) {
 
-      return res.status(500).json({message: "Server Error", error})
+//       return res.status(500).json({message: "Server Error", error})
       
-    }  
+//     }  
 
-  } catch (error) {
+//   } catch (error) {
 
-    return res.status(500).json({message: "Shopify Server Error", error})
+//     return res.status(500).json({message: "Shopify Server Error", error})
 
-  }
+//   }
 
-})
+// })
 
 
 export default userRoutes;

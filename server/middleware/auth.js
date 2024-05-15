@@ -71,9 +71,6 @@ const authMiddleware = (app) => {
 
   app.get("/api/auth/tokens", async (req, res) => {
 
-    console.log(req.headers);
-    console.log('req.url in token =>', req.url)
-
     try {
       const callbackResponse = await shopify.auth.callback({
         rawRequest: req,
@@ -89,26 +86,6 @@ const authMiddleware = (app) => {
       console.log('sesssionHandler offline access token => ', session.accessToken);
       logger.info({'Session.accessToken': session.accessToken, "for shop": session.shop});
 
-      // try {
-
-      //   const {rows} = await query('SELECT * FROM shopify_saved_tokens WHERE store_url = $1', [`https://${session.shop}/`])
-
-      //   if (rows.length === 0) {
-
-      //     await query('INSERT INTO shopify_saved_tokens (shopify_access_token, store_url) VALUES ($1, $2);', [session.accessToken, `https://${session.shop}/`]);
-
-      //   } else if (session.accessToken !== rows[0].shopify_access_token) {
-
-      //     await query('UPDATE shopify_saved_tokens SET shopify_access_token = $1 WHERE store_url = $2', [session.accessToken, `https://${session.shop}/`])
-      
-      //   }
-        
-      // } catch (error) {
-
-      //   logger.error({'Postgress error =>': error})
-
-      // }
-
       await shopify.webhooks.register({
         session,
       });
@@ -117,13 +94,13 @@ const authMiddleware = (app) => {
 
       return res.redirect(`https://dashboard.openleaf.tech/auth/login?shop=${session.shop}&accessToken=${session.accessToken}`)
 
-      return await shopify.auth.begin({
-        shop: session.shop,
-        callbackPath: "/api/auth/callback",
-        isOnline: true,
-        rawRequest: req,
-        rawResponse: res,
-      });
+      // return await shopify.auth.begin({
+      //   shop: session.shop,
+      //   callbackPath: "/api/auth/callback",
+      //   isOnline: true,
+      //   rawRequest: req,
+      //   rawResponse: res,
+      // });
 
     } catch (e) {
 

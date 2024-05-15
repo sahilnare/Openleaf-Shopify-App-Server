@@ -2,7 +2,6 @@ import { Form, FormLayout, TextField, Button, Text, Card, Spinner } from "@shopi
 import { useEffect, useState, useCallback } from "react";
 import "./index.css";
 import { useNavigate } from "raviger";
-// import { useNavigate } from "@shopify/app-bridge-react";
 
 const Home = () => {
 
@@ -18,14 +17,6 @@ const Home = () => {
     setLoader(true);
     const res = await fetch(`/api/apps/offline/token?shop=${shopUrl}`);
     console.log(res.ok);
-    if (res.ok) {
-      console.log('navigating')
-      navigate(`https://dashboard.openleaf.tech`, {
-        replace: true
-      })
-      // window.location.replace(`https://dashboard.openleaf.tech`)
-      // window.location.replace(`https://dashboard.openleaf.tech/admin/shopify/?shop=${shopUrl}&apiKey=${shopApiKey}`)
-    }
     setLoader(false)
   }
 
@@ -47,7 +38,9 @@ const Home = () => {
   }, [shopUrl])
 
   return (
-    <Spinner accessibilityLabel="Spinner example" size="large" width="100vw" height="100vh" text="center" />
+    <Text>
+      Openleaf
+    </Text>
   )
 }
 

@@ -16,15 +16,17 @@ const appUninstallHandler = async (
 ) => {
   /** @type {webhookTopic} */
 
-  try {
+  // try {
     
-    await query('DELETE FROM shopify_saved_tokens WHERE store_url = $1', [`https://${shop}/`]);
+  //   await query('DELETE FROM shopify_saved_tokens WHERE store_url = $1', [`https://${shop}/`]);
 
-  } catch (error) {
+  // } catch (error) {
     
-    logger.info({'Postgre Sql error =>': error});
+  //   logger.info({'Postgre Sql error =>': error});
 
-  }
+  // }
+
+  logger.info({'App Uninstall': shop})
 
   // let user_id;
 
