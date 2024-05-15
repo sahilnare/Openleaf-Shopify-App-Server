@@ -92,7 +92,7 @@ const authMiddleware = (app) => {
 
       logger.info({'Webhook registered of shop': session.shop});
 
-      return res.redirect(`https://dashboard.openleaf.tech/auth/login?shop=${session.shop}&accessToken=${session.accessToken}`)
+      return res.redirect(`https://dashboard.openleaf.tech/auth/login?shop=${session.shop}&accessToken=${session.accessToken}&shopifyLogin=1`)
 
       // return await shopify.auth.begin({
       //   shop: session.shop,
