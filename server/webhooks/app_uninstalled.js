@@ -28,46 +28,45 @@ const appUninstallHandler = async (
 
   logger.info({'App Uninstall': shop})
 
-  // let user_id;
+  let user_id;
 
-  // try {
+  try {
     
-  //   const { rows } = await query('DELETE FROM shopify_users WHERE store_url = $1 RETURNING user_id', [`https://${shop}/`]);
+    const { rows } = await query('DELETE FROM shopify_users WHERE store_url = $1 RETURNING user_id', [`https://${shop}/`]);
 
-  //   console.log('webhookREqBody', webhookRequestBody, webhookId, apiVersion);
-  //   user_id = rows[0].user_id;
+    user_id = rows[0].user_id;
 
-  //   logger.info({"Shopify User deleted with user_id =>": user_id});
+    logger.info({"Shopify User deleted with user_id =>": user_id});
 
-  //   try {
+    try {
       
-  //     await query('DELETE FROM shopify_locations WHERE user_id = $1', [user_id]);
+      await query('DELETE FROM shopify_locations WHERE user_id = $1', [user_id]);
 
-  //     logger.info({"Location deleted with user_id =>": user_id});
+      logger.info({"Location deleted with user_id =>": user_id});
 
-  //   } catch (error) {
+    } catch (error) {
       
-  //     logger.error({"Error in deleting locations with user_id =>": user_id});
+      logger.error({"Error in deleting locations with user_id =>": user_id});
 
-  //   }
+    }
 
-  //   try {
+    try {
       
-  //     await query('DELETE FROM shopify_packaging WHERE user_id = $1', [user_id]);
+      await query('DELETE FROM shopify_packaging WHERE user_id = $1', [user_id]);
 
-  //     logger.info({"Packaging deleted with user_id =>": user_id});
+      logger.info({"Packaging deleted with user_id =>": user_id});
 
-  //   } catch (error) {
+    } catch (error) {
       
-  //     logger.error({"Error in deleting packaging with user_id =>": user_id});
+      logger.error({"Error in deleting packaging with user_id =>": user_id});
 
-  //   }
+    }
 
-  // } catch (error) {
+  } catch (error) {
     
-  //   logger.error({"Error in deleting shopify user with user_id": user_id});
+    logger.error({"Error in deleting shopify user with user_id": user_id});
 
-  // }
+  }
   
 };
 
