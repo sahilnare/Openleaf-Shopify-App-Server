@@ -35,6 +35,8 @@ const openleafOrderUpdated = async (
         body: webhookRequestBody
       });
 
+      console.log('Order update response =>', response);
+
     } catch (error) {
 
       logger.error({ 'Openleaf Server Error:': { error }})
