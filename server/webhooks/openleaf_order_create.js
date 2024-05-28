@@ -37,7 +37,7 @@ const openleafOrderCreated = async (
         }
       });
 
-      console.log('order create response =>', response.json())
+      console.log('order create response =>', await response.json())
 
     } catch (error) {
 
