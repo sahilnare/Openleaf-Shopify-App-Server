@@ -4,7 +4,7 @@ import StoreModel from "../../utils/models/StoreModel.js";
 import logger from "../logger.js";
 
 /**
- * @typedef { import("../../_developer/types/2023-10/webhooks.js").APP_UNINSTALLED } webhookTopic
+ * @typedef { import("../../_developer/types/2024-01/webhooks.js").APP_UNINSTALLED } webhookTopic
  */
 
 const appUninstallHandler = async (
@@ -25,6 +25,8 @@ const appUninstallHandler = async (
   //   logger.info({'Postgre Sql error =>': error});
 
   // }
+
+  console.log('shop unstall', shop);
 
   logger.info({'App Uninstall': shop})
 
