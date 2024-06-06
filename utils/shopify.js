@@ -24,7 +24,7 @@ const shopify = shopifyApi({
 shopify.webhooks.addHandlers({
   APP_UNINSTALLED: {
     deliveryMethod: DeliveryMethod.Http,
-    callbackUrl: "https://marketplace1.openleaf.tech/api/auth?shop=testopenleaf.myshopify.com",
+    callbackUrl: "/api/webhooks/order_created",
     callback: appUninstallHandler,
   },
   ORDERS_CREATE: {
