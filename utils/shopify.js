@@ -24,7 +24,7 @@ const shopify = shopifyApi({
 shopify.webhooks.addHandlers({
   APP_UNINSTALLED: {
     deliveryMethod: DeliveryMethod.Http,
-    callbackUrl: "/api/webhooks/order_created",
+    callbackUrl: "/api/webhooks/uninstall",
     callback: appUninstallHandler,
   },
   ORDERS_CREATE: {
@@ -39,12 +39,12 @@ shopify.webhooks.addHandlers({
   },
   LOCATIONS_CREATE: {
     deliveryMethod: DeliveryMethod.Http,
-    callbackUrl: 'https://marketplace1.openleaf.tech/api/webhooks/location_create',
+    callbackUrl: '/api/webhooks/location_created',
     callback: openleafLocationCreate
   },
   LOCATIONS_UPDATE: {
     deliveryMethod: DeliveryMethod.Http,
-    callbackUrl: 'https://marketplace1.openleaf.tech/api/webhooks/location_create',
+    callbackUrl: '/api/webhooks/location_updated',
     callback: openleafLocationUpdate
   }
 });
