@@ -15,7 +15,7 @@ const openleafOrderUpdated = async (
 
   const { rows } = await query('SELECT webhook_id FROM shopify_users WHERE store_url = $1', [`https://${shop}/`]);
 
-  console.log('rows in order updated =>', rows);
+//   console.log('rows in order updated =>', rows);
 
   if (rows.length !== 0) {
 
@@ -25,7 +25,7 @@ const openleafOrderUpdated = async (
 
     try {
 
-      console.log('Order update body ->', webhookRequestBody);
+    //   console.log('Order update body ->', webhookRequestBody);
       
       const response = await fetch(url, {
         method: 'POST',

@@ -16,7 +16,7 @@ const openleafOrderCreated = async (
   
   const { rows } = await query('SELECT webhook_id, shopify_access_token FROM shopify_users WHERE store_url = $1', [`https://${shop}/`]);
 
-  console.log('order create rows =>', rows);
+//   console.log('order create rows =>', rows);
 
   if (rows.length !== 0) {
 
@@ -25,7 +25,7 @@ const openleafOrderCreated = async (
     const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`
     console.log('url =>', url);
 
-    console.log('Order create body ->', webhookRequestBody);
+    // console.log('Order create body ->', webhookRequestBody);
 
     try {
       
