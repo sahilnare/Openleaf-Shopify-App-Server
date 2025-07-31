@@ -23,7 +23,7 @@ const openleafOrderCreated = async (
     const webhookId = rows[0].webhook_id;
 
     const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`
-    console.log('url =>', url);
+    // console.log('url =>', url);
 
     // console.log('Order create body ->', webhookRequestBody);
 
@@ -37,7 +37,7 @@ const openleafOrderCreated = async (
         }
       });
 
-      console.log('order create response =>', await response.json())
+      // console.log('order create response =>', await response.json())
 
     } catch (error) {
 

@@ -53,7 +53,7 @@ const createServer = async (root = process.cwd()) => {
           rawRequest: req,
           rawResponse: res,
         });
-        console.log(`--> Processed ${topic} webhook for ${shop}`);
+        // console.log(`--> Processed ${topic} webhook for ${shop}`);
       } catch (e) {
         console.error(
           `---> Error while registering ${topic} webhook for ${shop}`,
