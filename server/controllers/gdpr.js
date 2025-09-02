@@ -25,10 +25,10 @@ const customerDataRequest = async (topic, shop, webhookRequestBody) => {
   // }
   try {
     console.log(`Handle ${topic} for ${shop}`);
-    console.log(webhookRequestBody);
+    // console.log(webhookRequestBody);
     return { success: true };
   } catch (e) {
-    console.error(e);
+    // console.error(e);
     return { success: false };
   }
 };
@@ -57,10 +57,10 @@ const customerRedact = async (topic, shop, webhookRequestBody) => {
   // }
   try {
     console.log(`Handle ${topic} for ${shop}`);
-    console.log(webhookRequestBody);
+    // console.log(webhookRequestBody);
     return { success: true };
   } catch (e) {
-    console.error(e);
+    // console.error(e);
     return { success: false };
   }
 };
@@ -79,10 +79,10 @@ const shopRedact = async (topic, shop, webhookRequestBody) => {
   // }
   try {
     console.log(`Handle ${topic} for ${shop}`);
-    console.log(webhookRequestBody);
+    // console.log(webhookRequestBody);
     return { success: true };
   } catch (e) {
-    console.error(e);
+    // console.error(e);
     return { success: false };
   }
 };

@@ -13,48 +13,42 @@ const openleafOrderCreated = async (
 ) => {
   /** @type {webhookTopic} */
 
-  
-  const { rows } = await query('SELECT webhook_id, shopify_access_token FROM shopify_users WHERE store_url = $1', [`https://${shop}/`]);
+  try {
+    const { rows } = await query(
+      "SELECT webhook_id, shopify_access_token FROM shopify_users WHERE store_url = $1",
+      [`https://${shop}/`]
+    );
 
-//   console.log('order create rows =>', rows);
-
-  if (rows.length !== 0) {
-
-    const webhookId = rows[0].webhook_id;
-
-    const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`
-    // console.log('url =>', url);
-
-    // console.log('Order create body ->', webhookRequestBody);
-
-    try {
-      
-      const response = await fetch(url, {
-        method: 'POST',
-        body: webhookRequestBody,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      // console.log('order create response =>', await response.json())
-
-    } catch (error) {
-
-      logger.error({ 'Openleaf Server Error:': { error }})
-      
+    if (rows.length === 0) {
+      logger.error({ "User not registered with shop:": shop });
+      return;
     }
 
-    // return res.status(200).json({message: "Order Created"})
-    logger.info({ 'Order Created in shop: ': shop })
+    const webhookId = rows[0].webhook_id;
+    const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/order/${webhookId}`;
 
-  } else {
+    const response = await fetch(url, {
+      method: "POST",
+      body: webhookRequestBody,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-    // return res.status(200).json({message: "User not present with this shop"})
-    logger.info({ 'User not present with this shop': shop })
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(
+        `Request failed with status ${response.status}: ${errorBody}`
+      );
+    }
 
+    logger.info({ "Order create webhook successfully forwarded for shop:": shop });
+  } catch (error) {
+    logger.error({
+      "Error processing ORDER_CREATE webhook for shop": shop,
+      "error": error.message,
+    });
   }
-
 };
 
 export default openleafOrderCreated;

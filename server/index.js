@@ -29,7 +29,7 @@ const isDev = process.env.NODE_ENV === "dev";
 
 // MongoDB Connection
 const mongoUrl =
-  process.env.MONGO_URL || "mongodb://127.0.0.1:27017/shopify-express-app";
+  process.env.MONGO_URL || "mongodb://127.0.0.1:27017/openleaf-shopify-app";
 
 mongoose.connect(mongoUrl);
 
@@ -56,11 +56,11 @@ const createServer = async (root = process.cwd()) => {
         // console.log(`--> Processed ${topic} webhook for ${shop}`);
       } catch (e) {
         console.error(
-          `---> Error while registering ${topic} webhook for ${shop}`,
+          `---> Error while processing ${topic} webhook for ${shop}`,
           e
         );
         if (!res.headersSent) {
-          res.status(500).send(error.message);
+          res.status(500).send("Internal Server Error");
         }
       }
     }
@@ -82,8 +82,9 @@ const createServer = async (root = process.cwd()) => {
       });
       res.status(200).send(response.body);
     } catch (e) {
-      console.error(`---> An error occured at GraphQL Proxy`, e);
-      res.status(403).send(e);
+      const shop = res.locals.shopify?.session?.shop || "unknown shop";
+      console.error(`---> An error occurred at GraphQL Proxy for ${shop}:`, e);
+      res.status(403).send("An error occurred processing the request.");
     }
   });
 
@@ -114,10 +115,9 @@ const createServer = async (root = process.cwd()) => {
         break;
       default:
         console.error(
-          "--> Congratulations on breaking the GDPR route! Here's the topic that broke it: ",
-          topic
+          `--> Invalid GDPR topic received: ${topic} for shop: ${shop}`
         );
-        response = "broken";
+        response = { success: false };
         break;
     }
 

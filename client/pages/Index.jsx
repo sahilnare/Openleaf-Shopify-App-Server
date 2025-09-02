@@ -16,7 +16,7 @@ const Home = () => {
 
     setLoader(true);
     const res = await fetch(`/api/apps/offline/token?shop=${shopUrl}`);
-    console.log(res.ok);
+    // console.log(res.ok);
     setLoader(false)
   }
 
@@ -67,7 +67,7 @@ const HomePage = () => {
         setIsUserLogin(true);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
     setLoader(false);
   }
@@ -98,7 +98,7 @@ const HomePage = () => {
       }
       
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
     setLoader(false);
   }
@@ -112,7 +112,7 @@ const HomePage = () => {
     try {
       fetchData();
     } catch (error) {
-      console.log('error in submit from => ', error);
+      // console.log('error in submit from => ', error);
     }
 
   }
@@ -143,12 +143,12 @@ const HomePage = () => {
 
   useEffect(() => {
     if (params?.get('hmac') && shopUrl) {
-      console.log("Navigating")
+      // console.log("Navigating")
       navigate(`https://marketplace1.openleaf.tech/api/auth?shop=${shopUrl}`)
     }
   }, [shopUrl, params])
 
-  console.log("params =>", params, params?.get('hmac'));
+  // console.log("params =>", params, params?.get('hmac'));
   if (isUserLogin) {
     return (
       <div className="card-sync">

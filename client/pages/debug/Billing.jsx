@@ -81,7 +81,7 @@ const ActiveSubscriptions = () => {
     if (activeSubscriptions.length === 0) {
       rowsData.push(["No Plan", "N/A", "N/A", "USD 0.00"]);
     } else {
-      console.log("Rendering Data");
+      // console.log("Rendering Data");
       Object.entries(activeSubscriptions).map(([key, value]) => {
         const { name, status, test } = value;
         const { amount, currencyCode } =

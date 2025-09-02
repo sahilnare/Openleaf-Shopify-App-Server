@@ -13,42 +13,41 @@ const openleafOrderUpdated = async (
 ) => {
   /** @type {webhookTopic} */
 
-  const { rows } = await query('SELECT webhook_id FROM shopify_users WHERE store_url = $1', [`https://${shop}/`]);
+  try {
+    const { rows } = await query(
+      "SELECT webhook_id FROM shopify_users WHERE store_url = $1",
+      [`https://${shop}/`]
+    );
 
-//   console.log('rows in order updated =>', rows);
-
-  if (rows.length !== 0) {
-
-    const webhookId = rows[0].webhook_id;
-
-    const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/orderUpdate/${webhookId}`
-
-    try {
-
-    //   console.log('Order update body ->', webhookRequestBody);
-      
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: webhookRequestBody
-      });
-
-      // console.log('Order update response =>', await response.json());
-
-    } catch (error) {
-
-      logger.error({ 'Openleaf Server Error:': { error }})
-
+    if (rows.length === 0) {
+      logger.error({ "User not registered with shop:": shop });
+      return;
     }
 
-    logger.info({ 'Order Updated in shop: ': shop })
+    const webhookId = rows[0].webhook_id;
+    const url = `https://api.openleaf.tech/api/v1/shopifyWebHook/orderUpdate/${webhookId}`;
 
-  } else {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: webhookRequestBody,
+    });
 
-    logger.info({ 'User not Register with shop: ': shop })
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(
+        `Request failed with status ${response.status}: ${errorBody}`
+      );
+    }
 
+    logger.info({ "Order update webhook successfully forwarded for shop:": shop });
+  } catch (error) {
+    logger.error({
+      "Error processing ORDER_UPDATED webhook for shop": shop,
+      "error": error.message,
+    });
   }
 };
 
