@@ -14,6 +14,13 @@ const openleafOrderUpdated = async (
   /** @type {webhookTopic} */
 
   try {
+
+    if (shop === 'ghar-soaps.myshopify.com') {
+
+      return;
+
+    }
+    
     const { rows } = await query(
       "SELECT webhook_id FROM shopify_users WHERE store_url = $1",
       [`https://${shop}/`]
